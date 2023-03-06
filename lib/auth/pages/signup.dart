@@ -124,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (user != null) {
                             await user.sendEmailVerification();
                             showEmailVerificationDialog(context,
-                                'Email verification link is sent to your Email,'
+                                'Email verification link is sent to your Email,\n'
                                     'Once verified try login again!');
                             setState(() {
                               onChanged = false;

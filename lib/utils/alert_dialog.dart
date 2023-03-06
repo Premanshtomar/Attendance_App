@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 Future<void> showErrorDialog(BuildContext context, String text) {
   return showDialog(
       context: context,
@@ -89,6 +88,28 @@ Future<bool> showLogOutDialog(BuildContext context){
           Navigator.of(context).pop(true);
         },
             child: const Text('Logout'))
+
+      ],
+    );
+  }).then((value) => value ?? false);
+}
+
+Future<bool> showImagePickerDialog(BuildContext context){
+  return showDialog(context: context, builder: (context){
+    return AlertDialog(
+      title: const Center(child: Text('Upload Image')),
+      content: const Text("From where do you want to upload image?"),
+      actions: [
+        TextButton(onPressed: () {
+          Navigator.of(context).pop(true);
+          Navigator.of(context).pop();
+        },
+            child: const Text('Gallery')),
+        TextButton(onPressed: () {
+          Navigator.of(context).pop(false);
+          Navigator.of(context).pop();
+        },
+            child: const Text('Camera'))
 
       ],
     );
