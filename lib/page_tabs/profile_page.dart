@@ -2,12 +2,12 @@
 
 import 'dart:io';
 
-import 'package:attendance_app/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../services/data_to_store.dart';
 import '../utils/alert_dialog.dart';
 import '../utils/text_widget.dart';
 
