@@ -1,10 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
+
+import 'package:attendance_app/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../utils/alert_dialog.dart';
+import '../utils/text_widget.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -15,6 +20,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   File? _image;
+  var user = FirebaseAuth.instance.currentUser;
 
   Future _pickImage(ImageSource source) async {
     try {
@@ -83,12 +89,12 @@ class _ProfileState extends State<Profile> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        TextWidget(
+                      children:  [
+                        const TextWidget(
                           text: 'Name : ',
                         ),
                         TextWidget(
-                          text: 'Data',
+                          text: firebaseName,
                         ),
                       ],
                     ),
@@ -147,30 +153,19 @@ class _ProfileState extends State<Profile> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.logout)),
+                IconButton(
+                    onPressed: () async {
+                      var shouldLogout = await showLogOutDialog(context);
+                      if (shouldLogout) {
+                        FirebaseAuth.instance.signOut();
+                        Navigator.of(context).pushNamed('/logging/');
+                      }
+                    },
+                    icon: const Icon(Icons.logout)),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class TextWidget extends StatelessWidget {
-  const TextWidget({Key? key, required this.text, this.color})
-      : super(key: key);
-  final String text;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        color: color,
       ),
     );
   }

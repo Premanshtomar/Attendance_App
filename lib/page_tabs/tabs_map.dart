@@ -11,7 +11,7 @@ final List<Map<String, dynamic>> pageTabs = [
     'bottomBarColor': Colors.red.shade600
   },
   {
-    'pageName': const AttendancePage(),
+    'pageName':  const AttendancePage(),
     'title': 'Attendance',
     'navigationBarColour': Colors.blue.shade200,
     'bottomBarColor': Colors.blue.shade600

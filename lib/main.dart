@@ -1,7 +1,7 @@
-
 import 'package:attendance_app/auth/pages/login.dart';
 import 'package:attendance_app/page_tabs/tabs_map.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +33,10 @@ class MaterialAppWithTheme extends StatelessWidget {
         '/reset_pass/': (context) => const ForgetPassword(),
       },
       theme: ThemeData(brightness: Brightness.light),
-      home: const Home(),
+      home: FirebaseAuth.instance.currentUser != null &&
+              FirebaseAuth.instance.currentUser!.emailVerified == true
+          ? const Home()
+          : const LogInPage(),
     );
   }
 }
@@ -51,33 +54,46 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(top: false,
+    return SafeArea(
+      top: false,
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
           title: Center(
-            child: Text(pageTabs[_pageIndex]['title'],
-            style: const TextStyle(fontWeight: FontWeight.w700,
-              color: Colors.black,fontStyle: FontStyle.italic
-            ),),
+            child: Text(
+              pageTabs[_pageIndex]['title'],
+              style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                  fontStyle: FontStyle.italic),
+            ),
           ),
         ),
         bottomNavigationBar: CurvedNavigationBar(
-          height: MediaQuery.of(context).size.height*0.07,
+          height: MediaQuery.of(context).size.height * 0.07,
           color: Colors.black45,
-          backgroundColor:Colors.white,
+          backgroundColor: Colors.white,
           // pageTabs[_pageIndex]['navigationBarColour'],
           index: _pageIndex,
           onTap: (index) {
-            _pageController.animateToPage(
-                index, duration: const Duration(microseconds: 400),
+            _pageController.animateToPage(index,
+                duration: const Duration(microseconds: 400),
                 curve: Curves.easeIn);
           },
           items: const [
-            Icon(Icons.person_rounded,color: Colors.white,),
-            Icon(Icons.notes,color: Colors.white,),
-            Icon(Icons.add_reaction_sharp,color: Colors.white,),
+            Icon(
+              Icons.person_rounded,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.notes,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.add_reaction_sharp,
+              color: Colors.white,
+            ),
           ],
         ),
         body: PageView(

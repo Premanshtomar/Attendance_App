@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 
 import '../repo/auth_exceptions.dart';
 
-
 class LogInPage extends StatefulWidget {
   const LogInPage({Key? key}) : super(key: key);
 
@@ -87,6 +86,7 @@ class _LogInPageState extends State<LogInPage> {
                     controller: _password,
                     keyboardType: TextInputType.emailAddress,
                     enableSuggestions: false,
+                    obscureText: true,
                     autocorrect: false,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(CupertinoIcons.lock_circle),
@@ -136,9 +136,11 @@ class _LogInPageState extends State<LogInPage> {
                           await firebaseUser.logInUser(
                               email: email, password: password);
                           final user = FirebaseAuth.instance.currentUser;
-                          if (user != null) {
+                          if (user != null&& user.emailVerified) {
                             Navigator.of(context).pushNamedAndRemoveUntil(
                                 '/homepage/', (route) => false);
+                          }else if(user != null && user.emailVerified == false){
+                            showErrorDialog(context, 'Please verify your Email first!');
                           }
                         } on UserNotFoundAuthException catch (_) {
                           showErrorDialog(context, 'User Not Found.');
@@ -162,19 +164,19 @@ class _LogInPageState extends State<LogInPage> {
                         duration: const Duration(milliseconds: 500),
                         child: onChanged
                             ? const Icon(
-                          Icons.done,
-                          color: Colors.black,
-                          size: 50,
-                        )
+                                Icons.done,
+                                color: Colors.black,
+                                size: 50,
+                              )
                             : const Center(
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            textScaleFactor: 3,
-                          ),
-                        ),
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textScaleFactor: 3,
+                                ),
+                              ),
                       ),
                     ),
                   )
