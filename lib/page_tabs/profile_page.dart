@@ -40,7 +40,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      // color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -65,7 +65,7 @@ class _ProfileState extends State<Profile> {
                           backgroundColor: Colors.black45,
                           child: const Text(
                             'No image selected',
-                            style: TextStyle(color: Colors.black, fontSize: 20),
+                            style: TextStyle( fontSize: 20),
                           ),
                         )
                       : CircleAvatar(

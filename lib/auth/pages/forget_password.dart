@@ -1,6 +1,8 @@
 import 'package:attendance_app/auth/repo/repo.dart';
+import 'package:attendance_app/custom_widgets/custom_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../utils/alert_dialog.dart';
 import '../repo/auth_exceptions.dart';
 
@@ -23,28 +25,22 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/forget.png'),
-                    fit: BoxFit.cover,
-                  )),
-            ),
+            customImageContainer(context, 'assets/forget.png'),
             const Text(
               'Forget Password?',
-              style: TextStyle(fontWeight: FontWeight.w700),
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
               textScaleFactor: 2,
             ),
             const Text(
               "Don't worry it happens!",
-              style: TextStyle(fontWeight: FontWeight.w700),
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
             ),
             const Text(
               'Enter your Email so we can help you!',
-              style: TextStyle(fontWeight: FontWeight.w700),
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
               textScaleFactor: 2.75,
             ),
             Container(
@@ -52,24 +48,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               margin: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.at_circle),
-                      hintText: 'Username',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Username',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Email', _email, CupertinoIcons.at_circle, false),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.02,
                   ),
@@ -118,19 +98,20 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         duration: const Duration(milliseconds: 500),
                         child: onChanged
                             ? const Icon(
-                          Icons.done,
-                          color: Colors.black,
-                          size: 50,
-                        )
+                                Icons.done,
+                                color: Colors.black,
+                                size: 50,
+                              )
                             : const Center(
-                          child: Text(
-                            'Send link',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            textScaleFactor: 3,
-                          ),
-                        ),
+                                child: Text(
+                                  'Send link',
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textScaleFactor: 3,
+                                ),
+                              ),
                       ),
                     ),
                   )

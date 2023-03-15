@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../custom_widgets/custom_widgets.dart';
 import '../repo/auth_exceptions.dart';
 
 class LogInPage extends StatefulWidget {
@@ -28,26 +29,14 @@ class _LogInPageState extends State<LogInPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.zero,
-              margin: EdgeInsets.zero,
-              height: MediaQuery.of(context).size.height * 0.35,
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.topCenter,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(
-                      ('assets/login.png'),
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
+            customImageContainer(context, 'assets/login.png'),
             SizedBox(
               height: MediaQuery.of(context).size.height * .02,
             ),
             const Text(
               'Hello!',
               style: TextStyle(
+                color: Colors.black,
                 fontWeight: FontWeight.w700,
               ),
               textScaleFactor: 3,
@@ -61,46 +50,13 @@ class _LogInPageState extends State<LogInPage> {
               width: MediaQuery.of(context).size.width * .90,
               child: Column(
                 children: [
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.at_circle),
-                      hintText: 'Username',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Username',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Email', _email, CupertinoIcons.at_circle, false),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * .02,
                   ),
-                  TextField(
-                    controller: _password,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    obscureText: true,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.lock_circle),
-                      hintText: 'Password',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Password',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Password', _password, CupertinoIcons.lock_circle, true),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -128,7 +84,7 @@ class _LogInPageState extends State<LogInPage> {
                         setState(() {
                           onChanged = true;
                         });
-                        await Future.delayed(const Duration(milliseconds: 500));
+                        // await Future.delayed(const Duration(milliseconds: 500));
                         final email = _email.text.trim();
                         final password = _password.text;
                         final firebaseUser = FirebaseRepo();
@@ -136,11 +92,13 @@ class _LogInPageState extends State<LogInPage> {
                           await firebaseUser.logInUser(
                               email: email, password: password);
                           final user = FirebaseAuth.instance.currentUser;
-                          if (user != null&& user.emailVerified) {
+                          if (user != null && user.emailVerified) {
                             Navigator.of(context).pushNamedAndRemoveUntil(
                                 '/homepage/', (route) => false);
-                          }else if(user != null && user.emailVerified == false){
-                            showErrorDialog(context, 'Please verify your Email first!');
+                          } else if (user != null &&
+                              user.emailVerified == false) {
+                            showErrorDialog(
+                                context, 'Please verify your Email first!');
                           }
                         } on UserNotFoundAuthException catch (_) {
                           showErrorDialog(context, 'User Not Found.');
@@ -172,6 +130,7 @@ class _LogInPageState extends State<LogInPage> {
                                 child: Text(
                                   'Login',
                                   style: TextStyle(
+                                    color: Colors.black45,
                                     fontWeight: FontWeight.w700,
                                   ),
                                   textScaleFactor: 3,

@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'package:attendance_app/auth/pages/login.dart';
 import 'package:attendance_app/page_tabs/tabs_map.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -25,6 +27,7 @@ class MaterialAppWithTheme extends StatelessWidget {
   Widget build(BuildContext context) {
     // final theme = Provider.of<ThemeChanger>(context);
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       routes: {
         '/homepage/': (context) => const Home(),
@@ -32,7 +35,9 @@ class MaterialAppWithTheme extends StatelessWidget {
         '/signing/': (context) => const SignUpPage(),
         '/reset_pass/': (context) => const ForgetPassword(),
       },
-      theme: ThemeData(brightness: Brightness.light),
+      theme: ThemeData(
+        // primarySwatch: Brightness.light==true?Colors.deepPurple:Colors.red,
+          brightness: Brightness.light),
       home: FirebaseAuth.instance.currentUser != null &&
               FirebaseAuth.instance.currentUser!.emailVerified == true
           ? const Home()
@@ -50,22 +55,24 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _pageIndex = 0;
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(initialPage: 1);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
       child: Scaffold(
+
+        extendBody: true,
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: Brightness.light == true?Colors.white:Colors.black45,
           title: Center(
             child: Text(
               pageTabs[_pageIndex]['title'],
               style: const TextStyle(
                   fontWeight: FontWeight.w700,
-                  color: Colors.black,
+                  // color: Colors.black,
                   fontStyle: FontStyle.italic),
             ),
           ),
@@ -73,19 +80,16 @@ class _HomeState extends State<Home> {
         bottomNavigationBar: CurvedNavigationBar(
           height: MediaQuery.of(context).size.height * 0.07,
           color: Colors.black45,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           // pageTabs[_pageIndex]['navigationBarColour'],
-          index: _pageIndex,
+          index: 1,
           onTap: (index) {
             _pageController.animateToPage(index,
                 duration: const Duration(microseconds: 400),
                 curve: Curves.easeIn);
           },
           items: const [
-            Icon(
-              Icons.person_rounded,
-              color: Colors.white,
-            ),
+
             Icon(
               Icons.notes,
               color: Colors.white,
@@ -94,9 +98,15 @@ class _HomeState extends State<Home> {
               Icons.add_reaction_sharp,
               color: Colors.white,
             ),
+            Icon(
+              Icons.person_rounded,
+              color: Colors.white,
+            ),
           ],
         ),
         body: PageView(
+
+
           controller: _pageController,
           onPageChanged: (index) {
             setState(() {

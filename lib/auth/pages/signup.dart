@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../custom_widgets/custom_widgets.dart';
 import '../../utils/alert_dialog.dart';
 import '../repo/auth_exceptions.dart';
 
@@ -22,6 +23,30 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _name = TextEditingController();
 
+  int year = 1;
+
+  Widget yearCheckbox(int yearNo) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Checkbox(
+          fillColor:
+              MaterialStateColor.resolveWith((states) => Colors.deepPurple),
+          value: yearNo == year,
+          onChanged: (val) {
+            setState(() {
+              year = yearNo;
+            });
+          },
+        ),
+        Text(
+          yearNo.toString(),
+          style: const TextStyle(color: Colors.black),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,101 +55,41 @@ class _SignUpPageState extends State<SignUpPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.zero,
-              margin: EdgeInsets.zero,
-              height: MediaQuery.of(context).size.height * 0.35,
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.topCenter,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(
-                      ('assets/signup.png'),
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .02,
-            ),
-            const Text(
-              'Welcome',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
-              textScaleFactor: 3,
-            ),
+            customImageContainer(context, 'assets/signup.png'),
             SizedBox(
               height: MediaQuery.of(context).size.height * .02,
             ),
             SizedBox(
               // padding: const EdgeInsets.all(30),
-              height: MediaQuery.of(context).size.height * .35,
+              height: MediaQuery.of(context).size.height * .5,
               width: MediaQuery.of(context).size.width * .90,
               // color: Colors.red,
               child: Column(
                 children: [
-                  TextField(
-                    controller: _name,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.at_circle),
-                      hintText: 'Full Name',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Full Name',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Name'
+                          '', _email, CupertinoIcons.person_alt, false),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * .02,
                   ),
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.at_circle),
-                      hintText: 'Username',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Username',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Email', _email, CupertinoIcons.at_circle, false),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * .02,
                   ),
-                  TextField(
-                    controller: _password,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(CupertinoIcons.lock_circle),
-                      hintText: 'Password',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      fillColor: Colors.grey,
-                      filled: true,
-                      label: const Text(
-                        'Password',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
+                  customTextFieldWidget(
+                      'Password', _password, CupertinoIcons.lock_circle, true),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * .015,
+                  ),
+                  Wrap(
+                    children: [
+                      yearCheckbox(1),
+                      yearCheckbox(2),
+                      yearCheckbox(3),
+                      yearCheckbox(4),
+                      yearCheckbox(5),
+                    ],
                   ),
                   Material(
                     borderRadius: BorderRadius.circular(onChanged ? 150 : 10),
@@ -136,7 +101,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         setState(() {
                           onChanged = true;
                         });
-                        await Future.delayed(const Duration(milliseconds: 500));
+                        // await Future.delayed(
+                        //     const Duration(milliseconds: 500));
                         final email = _email.text.trim();
                         final password = _password.text;
                         final firebaseUser = FirebaseRepo();
@@ -153,11 +119,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             setState(() {
                               onChanged = false;
                             });
-                            var reference = FirebaseFirestore.instance.collection(
-                                FirebaseAuth.instance.currentUser!.uid);
-                            reference.add({
-                              'name': _name.text.trim()
-                            }).then((value) => print(value.get()));
+                            var dbUser = FirebaseAuth.instance.currentUser!;
+                            var reference = FirebaseFirestore.instance
+                                .collection(dbUser.uid);
+                            reference.add({'name': _name.text.trim()}).then(
+                                (value) => (value.get()));
                           }
                           // Navigator.of(context).pushNamed('/email_verify/');
                         } on WeakPasswordAuthException catch (_) {
@@ -190,6 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: Text(
                                   'Sign in',
                                   style: TextStyle(
+                                    color: Colors.black45,
                                     fontWeight: FontWeight.w700,
                                   ),
                                   textScaleFactor: 3,

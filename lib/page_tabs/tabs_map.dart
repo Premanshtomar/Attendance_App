@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 final List<Map<String, dynamic>> pageTabs = [
   {
-    'pageName': const Profile(),
-    'title': 'Profile',
-    'navigationBarColour': Colors.red.shade200,
-    'bottomBarColor': Colors.red.shade600
+    'pageName': const RecordPage(),
+    'title': 'Record',
+    'navigationBarColour': Colors.green.shade200,
+    'bottomBarColor': Colors.green.shade600
   },
   {
     'pageName':  const AttendancePage(),
@@ -17,9 +17,11 @@ final List<Map<String, dynamic>> pageTabs = [
     'bottomBarColor': Colors.blue.shade600
   },
   {
-    'pageName': const RecordPage(),
-    'title': 'Record',
-    'navigationBarColour': Colors.green.shade200,
-    'bottomBarColor': Colors.green.shade600
+    'pageName': const Profile(),
+    'title': 'Profile',
+    'navigationBarColour': Colors.red.shade200,
+    'bottomBarColor': Colors.red.shade600
   },
+
+
 ];
