@@ -1,23 +1,36 @@
+import 'package:attendance_app/styles/colors/colors.dart';
+import 'package:attendance_app/styles/text_styles/text_styles.dart';
 import 'package:flutter/material.dart';
 
-Widget customTextFieldWidget(String text, TextEditingController controller,
-    IconData icon, bool obscure) {
+Widget customTextFieldWidget({
+  required String text,
+  required TextEditingController controller,
+  Widget? icon,
+  bool? obscure,
+  Color? backgroundColor,
+}) {
   return TextField(
-    obscureText: obscure,
+    obscureText: obscure ?? false,
     controller: controller,
     keyboardType:
         obscure == false ? TextInputType.emailAddress : TextInputType.text,
     enableSuggestions: false,
     autocorrect: false,
     decoration: InputDecoration(
-      prefixIcon: Icon(icon),
-      hintText: text,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-      fillColor: Colors.grey,
+      prefixIcon: icon,
+      // hintText: text,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color:AppColors.primaryAccentColor ),
+      ),
+      fillColor: backgroundColor ?? NaturalColors.lightGrey,
       filled: true,
       label: Text(
         text,
-        style: const TextStyle(fontWeight: FontWeight.w700),
+        style: AppTextStyles.textStyleHeading12,
       ),
     ),
   );
@@ -39,4 +52,3 @@ Widget customImageContainer(BuildContext context, String image) {
     ),
   );
 }
-

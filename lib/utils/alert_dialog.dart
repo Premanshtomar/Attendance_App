@@ -94,7 +94,7 @@ Future<bool> showLogOutDialog(BuildContext context){
   }).then((value) => value ?? false);
 }
 
-Future<bool> showImagePickerDialog(BuildContext context){
+Future<bool?> showImagePickerDialog(BuildContext context){
   return showDialog(context: context, builder: (context){
     return AlertDialog(
       title: const Center(child: Text('Upload Image')),
@@ -102,16 +102,16 @@ Future<bool> showImagePickerDialog(BuildContext context){
       actions: [
         TextButton(onPressed: () {
           Navigator.of(context).pop(true);
-          Navigator.of(context).pop();
+          // Navigator.of(context).pop();
         },
             child: const Text('Gallery')),
         TextButton(onPressed: () {
           Navigator.of(context).pop(false);
-          Navigator.of(context).pop();
+          // Navigator.of(context).pop();
         },
             child: const Text('Camera'))
 
       ],
     );
-  }).then((value) => value ?? false);
+  });
 }

@@ -39,133 +39,132 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3,
-              width: MediaQuery.of(context).size.width,
-              // color: Colors.blue,
-              child: InkWell(
-                onTap: () async {
-                  showImagePickerDialog(context);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            width: MediaQuery.of(context).size.width,
+            // color: Colors.blue,
+            child: InkWell(
+              onTap: () async {
+                var value = await showImagePickerDialog(context);
+                if (value != null) {
                   _pickImage(
-                    await showImagePickerDialog(context)
+                    value == true
                         ? ImageSource.gallery
                         : ImageSource.camera,
                   );
-                },
-                child: Center(
-                  child: _image == null
-                      ? CircleAvatar(
-                          radius: MediaQuery.of(context).size.width * 0.3,
-                          backgroundColor: Colors.black45,
-                          child: const Text(
-                            'No image selected',
-                            style: TextStyle( fontSize: 20),
-                          ),
-                        )
-                      : CircleAvatar(
-                          radius: MediaQuery.of(context).size.width * 0.3,
-                          backgroundImage: FileImage(_image!),
+                }
+              },
+              child: Center(
+                child: _image == null
+                    ? CircleAvatar(
+                        radius: MediaQuery.of(context).size.width * 0.3,
+                        backgroundColor: Colors.black45,
+                        child: const Text(
+                          'No image selected',
+                          style: TextStyle(fontSize: 20),
                         ),
-                ),
+                      )
+                    : CircleAvatar(
+                        radius: MediaQuery.of(context).size.width * 0.3,
+                        backgroundImage: FileImage(_image!),
+                      ),
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width,
-              // color: Colors.green,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children:  [
-                        const TextWidget(
-                          text: 'Name : ',
-                        ),
-                        TextWidget(
-                          text: firebaseName,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        TextWidget(
-                          text: '% in Month : ',
-                        ),
-                        TextWidget(
-                          text: 'Data',
-                          color: Colors.blueGrey,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        TextWidget(
-                          text: '% in Year : ',
-                        ),
-                        TextWidget(
-                          text: 'Data',
-                          color: Colors.blueGrey,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const TextWidget(
-                          text: 'Email : ',
-                        ),
-                        TextWidget(
-                          text: FirebaseAuth.instance.currentUser!.email
-                              .toString(),
-                          color: Colors.blueGrey,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        TextWidget(
-                          text: 'Course : ',
-                        ),
-                        TextWidget(
-                          text: 'B.A.M.S',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width,
+            // color: Colors.green,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const TextWidget(
+                        text: 'Name : ',
+                      ),
+                      TextWidget(
+                        text: firebaseName,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      TextWidget(
+                        text: '% in Month : ',
+                      ),
+                      TextWidget(
+                        text: 'Data',
+                        color: Colors.blueGrey,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      TextWidget(
+                        text: '% in Year : ',
+                      ),
+                      TextWidget(
+                        text: 'Data',
+                        color: Colors.blueGrey,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const TextWidget(
+                        text: 'Email : ',
+                      ),
+                      TextWidget(
+                        text: FirebaseAuth.instance.currentUser!.email
+                            .toString(),
+                        color: Colors.blueGrey,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      TextWidget(
+                        text: 'Course : ',
+                      ),
+                      TextWidget(
+                        text: 'B.A.M.S',
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                    onPressed: () async {
-                      var shouldLogout = await showLogOutDialog(context);
-                      if (shouldLogout) {
-                        FirebaseAuth.instance.signOut();
-                        Navigator.of(context).pushNamed('/logging/');
-                      }
-                    },
-                    icon: const Icon(Icons.logout)),
-              ],
-            ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                  onPressed: () async {
+                    var shouldLogout = await showLogOutDialog(context);
+                    if (shouldLogout) {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.of(context).pushNamed('/logging/');
+                    }
+                  },
+                  icon: const Icon(Icons.logout)),
+            ],
+          ),
+        ],
       ),
     );
   }

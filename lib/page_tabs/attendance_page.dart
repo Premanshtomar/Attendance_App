@@ -1,5 +1,8 @@
+import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
+import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class AttendancePage extends StatefulWidget {
@@ -12,9 +15,12 @@ class AttendancePage extends StatefulWidget {
 class _AttendancePageState extends State<AttendancePage> {
   // bool _isExpanded = false;
   int _isChecked = 0;
+  List<String>subjects=[];
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<AppCubit, AppCubitStateModel>(
+  builder: (context, state) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -74,9 +80,9 @@ class _AttendancePageState extends State<AttendancePage> {
                       textScaleFactor: 1.5,
                     ),
                     children: List.generate(
-                      5,
+                      subjects.length+1,
                       (index) {
-                        if (index == 5 - 1) {
+                        if (index == subjects.length) {
                           return addNewSubjectButton();
                         }
                         return subjectName(index);
@@ -114,6 +120,8 @@ class _AttendancePageState extends State<AttendancePage> {
         ],
       ),
     );
+  },
+);
   }
 
   Widget addNewSubjectButton() {
@@ -152,7 +160,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget subjectName(int index) {
     return ListTile(
       title: Text(
-        'Subject $index',
+        subjects[index],
         style: const TextStyle(
           fontWeight: FontWeight.w400,
         ),
