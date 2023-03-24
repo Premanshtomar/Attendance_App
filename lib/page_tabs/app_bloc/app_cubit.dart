@@ -25,16 +25,19 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     List<String> subjectsListFromFirestore = [...student.allSubjects];
     emit(
       state.copyWith(
-        subjects: subjectsListFromFirestore,
-        studentName: student.name,
-        course: student.enrolledCourse,
-        selectedYear: student.selectedYear
-      ),
+          subjects: subjectsListFromFirestore,
+          studentName: student.name,
+          course: student.enrolledCourse,
+          selectedYear: student.selectedYear),
     );
   }
 
   CollectionReference studentReference =
       FirebaseFirestore.instance.collection('students');
+  CollectionReference dateReference =
+      FirebaseFirestore.instance.collection('days');
+  CollectionReference monthReference =
+      FirebaseFirestore.instance.collection('month');
   CollectionReference yearReference =
       FirebaseFirestore.instance.collection('year');
   CollectionReference subjectReference =
@@ -136,6 +139,15 @@ class AppCubit extends Cubit<AppCubitStateModel> {
                       monthId: [],
                       monthPercent: 0)
                   .toJson());
+          DocumentReference monthDocRef = monthReference.doc(user!.uid +
+              state.selectedYear.toString() +
+              subjectFieldController.text+
+              DateTime.now().month.toString());
+          await monthDocRef.set(Month(
+            monthPresent: 0,
+            monthAbsent: 0,
+            monthDayOff: 0,
+          ).toJson());
           emit(
             state.copyWith(
               subjects: newSubjectList,
@@ -148,5 +160,72 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     } else {
       emit(state.copyWith(isVisible: false));
     }
+  }
+
+  void onListTileClicked(index) {
+    emit(state.copyWith(selectedSubject: state.subjects[index]));
+  }
+
+  Future<void> onMarkAttendanceClicked() async {
+    DocumentReference dateDocRef = dateReference.doc(
+      user!.uid +
+          state.selectedYear.toString() +
+          state.selectedSubject! +
+          DateTime.now().month.toString() +
+          DateTime.now().day.toString(),
+    );
+    int present = 0;
+    int absent = 0;
+    int dayOff = 0;
+    if (state.isChecked == 1) {
+      present = 1;
+    } else if (state.isChecked == 2) {
+      absent = 1;
+    } else {
+      dayOff = 1;
+    }
+    await dateDocRef.set(
+      Date(
+        present: present,
+        absent: absent,
+        dayOff: dayOff,
+      ).toJson(),
+    );
+    DocumentReference monthDocRef = monthReference.doc(user!.uid +
+        state.selectedYear.toString() +
+        state.selectedSubject! +
+        DateTime.now().month.toString());
+    DocumentSnapshot month = await monthDocRef.get();
+    Month presentMonth = Month.fromJson(month.data() as Map<String, dynamic>);
+    await monthDocRef.set(Month(
+      monthPresent: presentMonth.monthPresent + present,
+      monthAbsent: presentMonth.monthAbsent + absent,
+      monthDayOff: presentMonth.monthDayOff + dayOff,
+    ).toJson());
+    DocumentReference subjectDocRef = subjectReference.doc(
+        user!.uid + state.selectedYear.toString() + state.selectedSubject!);
+    await subjectDocRef.update({
+      'monthPercent': presentMonth.monthPresent ~/
+          (presentMonth.monthAbsent + presentMonth.monthPresent).ceil()
+    });
+    DocumentReference yearDocRef = yearReference.doc(
+      user!.uid + state.selectedYear.toString(),
+    );
+    DocumentSnapshot selectedYear = await yearDocRef.get();
+    Year year = Year.fromJson(selectedYear.data()as Map<String, dynamic>);
+    await yearDocRef.update({
+      'totalAbsent':year.totalAbsent+absent,
+      'totalPrecent':year.totalAbsent+present,
+      'totalDayOff':year.totalAbsent+dayOff,
+    });
+    absent = 0;
+    present = 0;
+    dayOff = 0;
+
+    emit(state.copyWith(
+      isChecked: null,
+      selectedSubject: null,
+
+    ));
   }
 }

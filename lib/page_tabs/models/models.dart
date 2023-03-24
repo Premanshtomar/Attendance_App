@@ -102,13 +102,11 @@ class Month {
   final int monthPresent;
   final int monthAbsent;
   final int monthDayOff;
-  final List date;
 
   Month({
     required this.monthPresent,
     required this.monthAbsent,
     required this.monthDayOff,
-    required this.date,
   });
 
   factory Month.fromJson(Map<String, dynamic> json) {
@@ -116,7 +114,6 @@ class Month {
       monthPresent: json['monthPresent'] as int,
       monthAbsent: json['monthAbsent'] as int,
       monthDayOff: json['monthDayOff'] as int,
-      date: json['date'] as List,
     );
   }
 
@@ -125,7 +122,6 @@ class Month {
       'monthPresent': monthPresent,
       'monthAbsent': monthAbsent,
       'monthDayOff': monthDayOff,
-      'date': date
     };
   }
 }

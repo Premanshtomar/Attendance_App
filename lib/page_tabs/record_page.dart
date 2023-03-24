@@ -76,7 +76,7 @@ class RecordPage extends StatelessWidget {
                           ),
                           onPressed: () {
                             showModalBottomSheet(
-                              shape: const StadiumBorder(side: BorderSide(width: 10)),
+
                                 context: context,
                                 builder: (
                                   BuildContext context,

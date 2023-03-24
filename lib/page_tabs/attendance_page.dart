@@ -75,8 +75,9 @@ class AttendancePage extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 8, 4, 0),
                                   child: Text(
-                                    isExpanded ? 'Select Subject' : 'hello',
-                                    // todo, show selected subject name/title if not null else show select subject in else case
+                                    (state.selectedSubject == null
+                                        ? 'Select Subject'
+                                        : state.selectedSubject!),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w800
                                         //   color: _isExpanded ? Colors.blueAccent : Colors.black,
@@ -108,7 +109,7 @@ class AttendancePage extends StatelessWidget {
                         ),
                         customCheckboxTile('Present', 1, cubit),
                         customCheckboxTile('Absent', 2, cubit),
-                        customCheckboxTile('Day_off', 3, cubit),
+                        customCheckboxTile('Day-Off', 3, cubit),
                       ],
                     ),
                   ),
@@ -124,7 +125,9 @@ class AttendancePage extends StatelessWidget {
                     elevation: MaterialStateProperty.all(30.0),
                     backgroundColor: MaterialStateProperty.all(Colors.black45),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    cubit.onMarkAttendanceClicked();
+                  },
                   child: const Text(
                     'Mark Attendance',
                     style: TextStyle(color: Colors.white),
@@ -190,6 +193,7 @@ class AttendancePage extends StatelessWidget {
       ),
       onTap: () {
         // closing the expansion tile
+        cubit.onListTileClicked(index);
         cubit.toggleExpandedTile();
       },
     );

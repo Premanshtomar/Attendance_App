@@ -4,15 +4,17 @@ class AppCubitStateModel extends Equatable {
   final String course;
   final String studentName;
   final int? subjectListIndex;
-  final int isChecked;
+  final int? isChecked;
   final List<String> subjects;
   final int pageIndex;
   final DateTime? selectedDate;
   final bool isVisible;
   final bool isExpandableTileExpanded;
   final int selectedYear;
+  final String? selectedSubject;
 
   const AppCubitStateModel({
+    this.selectedSubject,
     this.course = '',
     this.selectedYear = 0,
     this.studentName = '',
@@ -21,12 +23,13 @@ class AppCubitStateModel extends Equatable {
     this.selectedDate,
     this.pageIndex = 1,
     this.subjects = const [],
-    this.isChecked = 0,
+    this.isChecked,
     this.isExpandableTileExpanded = false,
   });
 
   AppCubitStateModel copyWith(
       {int? isChecked,
+      String? selectedSubject,
       int? selectedYear,
       String? course,
       String? studentName,
@@ -48,11 +51,13 @@ class AppCubitStateModel extends Equatable {
       studentName: studentName ?? this.studentName,
       course: course ?? this.course,
       selectedYear: selectedYear ?? this.selectedYear,
+      selectedSubject: selectedSubject ?? this.selectedSubject,
     );
   }
 
   @override
   List<Object?> get props => [
+        selectedSubject,
         selectedYear,
         course,
         studentName,
