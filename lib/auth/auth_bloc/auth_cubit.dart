@@ -2,6 +2,7 @@
 
 import 'package:attendance_app/auth/repo/auth_exceptions.dart';
 import 'package:attendance_app/auth/repo/repo.dart';
+import 'package:attendance_app/page_tabs/models/models.dart';
 import 'package:attendance_app/utils/alert_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,7 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
   final TextEditingController nameControllerSignup = TextEditingController();
   final TextEditingController passwordControllerSignup =
       TextEditingController();
+  final TextEditingController courseFieldController = TextEditingController();
   final TextEditingController emailControllerLogin = TextEditingController();
   final TextEditingController passwordControllerLogin = TextEditingController();
   final TextEditingController emailControllerForgetPassword =
@@ -28,49 +30,53 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
     await Future.delayed(const Duration(milliseconds: 500));
     final email = emailControllerSignup.text.trim();
     final password = passwordControllerSignup.text;
-    final firebaseUser = FirebaseRepo();
-    try {
-      await firebaseUser.signUp(email: email, password: password);
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await user.sendEmailVerification();
-        if (!context.mounted) return;
-        showEmailVerificationDialog(
-            context,
-            'Email verification link is sent to your Email,\n'
-            'Once verified try login again!');
-        emit(state.copyWith(onChanged: false));
-        var studentReference =
-            FirebaseFirestore.instance.collection('students');
-        studentReference.doc(user.uid + nameControllerSignup.text).set(
-          {
-            'name': nameControllerSignup.text.trim(),
-            'enrolledCourse': '',
-            "profilePhoto": '',
-            'yearId': []
-          },
-        );
-        var yearReference = FirebaseFirestore.instance.collection('year');
-        yearReference
-            .doc(user.uid + nameControllerSignup.text + state.year.toString())
-            .set(
-          {
-            'total_present': 0,
-            'total_absent': 0,
-            'days_off': 0,
-            'subjectId': [],
-          },
-        );
+    if (emailControllerSignup.text.trim().isNotEmpty &&
+        passwordControllerSignup.text.trim().isNotEmpty &&
+        nameControllerSignup.text.trim().isNotEmpty &&
+        courseFieldController.text.trim().isNotEmpty) {
+      try {
+        await firebaseRepo.signUp(email: email, password: password);
+        var user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await user.sendEmailVerification();
+          if (!context.mounted) return;
+          showEmailVerificationDialog(
+              context,
+              'Email verification link is sent to your Email,\n'
+              'Once verified try login again!');
+          emit(state.copyWith(onChanged: false));
+          var studentReference =
+              FirebaseFirestore.instance.collection('students');
+          studentReference.doc(user.uid).set(Student(
+                name: nameControllerSignup.text,
+                enrolledCourse: courseFieldController.text.trim(),
+                selectedYear: state.year,
+                profilePhoto: 'profilePhoto',
+                yearId: [user.uid + state.year.toString()],
+                allSubjects: [],
+              ).toJson());
+          var yearReference = FirebaseFirestore.instance.collection('year');
+          yearReference.doc(user.uid + state.year.toString()).set(Year(
+                totalPresent: 0,
+                totalAbsent: 0,
+                totalDayOff: 0,
+                subjectId: [],
+              ).toJson());
+
+        }
+        // Navigator.of(context).pushNamed('/email_verify/');
+      } on WeakPasswordAuthException catch (_) {
+        showErrorDialog(context, 'Password Is Too Weak');
+      } on EmailAlreadyInUseAuthException catch (_) {
+        showErrorDialog(context, 'Email Already In Use.');
+      } on InvalidEmailAuthException catch (_) {
+        showErrorDialog(context, 'Invalid Email');
+      } on GenericAuthException catch (e) {
+        showErrorDialog(context, e.toString());
       }
-      // Navigator.of(context).pushNamed('/email_verify/');
-    } on WeakPasswordAuthException catch (_) {
-      showErrorDialog(context, 'Password Is Too Weak');
-    } on EmailAlreadyInUseAuthException catch (_) {
-      showErrorDialog(context, 'Email Already In Use.');
-    } on InvalidEmailAuthException catch (_) {
-      showErrorDialog(context, 'Invalid Email');
-    } on GenericAuthException catch (e) {
-      showErrorDialog(context, e.toString());
+    } else {
+      showErrorDialog(context,
+          'All the fields are Required and should be filled Properly!!');
     }
     emit(state.copyWith(onChanged: false));
   }
@@ -87,15 +93,12 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
     await Future.delayed(const Duration(milliseconds: 500));
     final email = emailControllerLogin.text.trim();
     final password = passwordControllerLogin.text;
-    final firebaseUser = FirebaseRepo();
     try {
-      await firebaseUser.logInUser(email: email, password: password);
-      final user = FirebaseAuth.instance.currentUser;
+      await firebaseRepo.logInUser(email: email, password: password);
+      var user = FirebaseAuth.instance.currentUser;
       if (user != null && user.emailVerified) {
         if (!context.mounted) return;
-
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/homepage/', (route) => false);
+        Navigator.of(context).pushNamed('/homepage/');
       } else if (user != null && user.emailVerified == false) {
         showErrorDialog(context, 'Please verify your Email first!');
       }
@@ -116,9 +119,8 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
 
     await Future.delayed(const Duration(milliseconds: 500));
     final email = emailControllerForgetPassword.text.trim();
-    final firebaseUser = FirebaseRepo();
     try {
-      await firebaseUser.forgetPassword(email: email);
+      await firebaseRepo.forgetPassword(email: email);
       if (!context.mounted) return;
       showErrorDialog(context, 'Password reset link is sent to your Email.');
       emit(state.copyWith(onChanged: false));

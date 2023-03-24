@@ -7,12 +7,12 @@ class AppColors {
 
 class TextColors {
   static Color mainTextColor = Colors.black;
-  static Color accentText = const Color(0xFF6C63FF);
+  static Color accentText = Colors.black;
   static Color errorColor = Colors.red;
   static Color successColor = Colors.green.shade300;
   static Color linkColor = Colors.blueAccent;
   static Color blueGrey = Colors.blueGrey;
-  static Color lightBlue = const Color(0xFF6C63FF);
+  static Color lightBlue = Colors.black45;
 
 
 }
@@ -20,7 +20,7 @@ class TextColors {
 
 class NaturalColors {
   static Color black = Colors.black;
-  static Color lightBlack = Colors.black;
+  static Color lightBlack = Colors.black45;
   static Color white = Colors.white;
   static Color grey = Colors.grey;
   static Color lightGrey = Colors.grey.shade200;

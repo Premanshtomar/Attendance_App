@@ -1,6 +1,7 @@
 import 'package:attendance_app/auth/auth_bloc/auth_cubit.dart';
 import 'package:attendance_app/auth/auth_bloc/auth_cubit_state_model.dart';
 import 'package:attendance_app/custom_widgets/custom_widgets.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +46,7 @@ class ForgetPassword extends StatelessWidget {
                       customTextFieldWidget(
                         text: 'Email',
                         controller: cubit.emailControllerForgetPassword,
-                        icon: const Icon(CupertinoIcons.at_circle),
+                        icon:  Icon(CupertinoIcons.at_circle,color: NaturalColors.lightBlack,),
                         obscure: false,
                       ),
                       SizedBox(
@@ -55,7 +56,7 @@ class ForgetPassword extends StatelessWidget {
                         borderRadius:
                             BorderRadius.circular(state.onChanged ? 150 : 10),
                         color: state.onChanged
-                            ? Colors.purpleAccent
+                            ? NaturalColors.black
                             : Colors.grey.shade200,
                         child: InkWell(
                           onTap: () async {
@@ -69,16 +70,16 @@ class ForgetPassword extends StatelessWidget {
                             height: MediaQuery.of(context).size.width * 0.13,
                             duration: const Duration(milliseconds: 500),
                             child: state.onChanged
-                                ? const Icon(
+                                ? Icon(
                                     Icons.done,
-                                    color: Colors.black,
+                                    color: NaturalColors.white,
                                     size: 50,
                                   )
-                                : const Center(
+                                : Center(
                                     child: Text(
                                       'Send link',
                                       style: TextStyle(
-                                        color: Colors.black45,
+                                        color: TextColors.accentText,
                                         fontWeight: FontWeight.w700,
                                       ),
                                       textScaleFactor: 3,
@@ -92,11 +93,11 @@ class ForgetPassword extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    const Text(
+                    Text(
                       'Click here to Login->',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: Colors.blueGrey,
+                        color: TextColors.accentText,
                       ),
                       textScaleFactor: 1,
                     ),
@@ -105,10 +106,10 @@ class ForgetPassword extends StatelessWidget {
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               '/logging/', (route) => false);
                         },
-                        child: const Text(
+                        child: Text(
                           'Login!',
                           style: TextStyle(
-                            color: Colors.deepPurple,
+                            color: TextColors.blueGrey,
                           ),
                           textScaleFactor: 1.5,
                         )),

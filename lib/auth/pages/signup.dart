@@ -1,6 +1,7 @@
 import 'package:attendance_app/auth/auth_bloc/auth_cubit.dart';
 import 'package:attendance_app/auth/auth_bloc/auth_cubit_state_model.dart';
 import 'package:attendance_app/custom_widgets/custom_widgets.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,7 @@ class SignUpPage extends StatelessWidget {
       children: [
         Checkbox(
           fillColor: MaterialStateColor.resolveWith(
-            (states) => Colors.deepPurple,
+            (states) => NaturalColors.black,
           ),
           value: yearNo == cubit.state.year,
           onChanged: (val) {
@@ -42,19 +43,20 @@ class SignUpPage extends StatelessWidget {
               children: [
                 customImageContainer(context, 'assets/signup.png'),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .02,
-                ),
-                SizedBox(
                   // padding: const EdgeInsets.all(30),
-                  height: MediaQuery.of(context).size.height * .5,
+                  height: MediaQuery.of(context).size.height * .52,
                   width: MediaQuery.of(context).size.width * .90,
                   // color: Colors.red,
                   child: Column(
                     children: [
                       customTextFieldWidget(
                         text: 'Name',
+                        hint: 'Full Name',
                         controller: cubit.nameControllerSignup,
-                        icon: const Icon(CupertinoIcons.person_alt),
+                        icon: Icon(
+                          CupertinoIcons.person_alt,
+                          color: NaturalColors.lightBlack,
+                        ),
                         obscure: false,
                       ),
                       SizedBox(
@@ -62,8 +64,12 @@ class SignUpPage extends StatelessWidget {
                       ),
                       customTextFieldWidget(
                         text: 'Email',
+                        hint: 'example@xyz.com',
                         controller: cubit.emailControllerSignup,
-                        icon: const Icon(CupertinoIcons.at_circle),
+                        icon: Icon(
+                          CupertinoIcons.at_circle,
+                          color: NaturalColors.lightBlack,
+                        ),
                         obscure: false,
                       ),
                       SizedBox(
@@ -71,12 +77,31 @@ class SignUpPage extends StatelessWidget {
                       ),
                       customTextFieldWidget(
                         text: 'Password',
-                        icon: const Icon(CupertinoIcons.lock_circle),
+                        icon: Icon(
+                          CupertinoIcons.lock_circle,
+                          color: NaturalColors.lightBlack,
+                        ),
                         obscure: true,
                         controller: cubit.passwordControllerSignup,
                       ),
                       SizedBox(
+                        height: MediaQuery.of(context).size.height * .02,
+                      ),
+                      customTextFieldWidget(
+                          text: 'Course Enrolled',
+                          controller: cubit.courseFieldController,
+                          icon: Icon(
+                            Icons.bookmark_added_sharp,
+                            color: NaturalColors.lightBlack,
+                          )),
+                      SizedBox(
                         height: MediaQuery.of(context).size.height * .015,
+                      ),
+                      const Text(
+                        'In which year are you in?',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500
+                        ),
                       ),
                       Wrap(
                         children: [
@@ -91,7 +116,7 @@ class SignUpPage extends StatelessWidget {
                         borderRadius:
                             BorderRadius.circular(state.onChanged ? 150 : 10),
                         color: state.onChanged
-                            ? Colors.lightBlueAccent.shade200
+                            ? NaturalColors.black
                             : Colors.grey.shade200,
                         child: InkWell(
                           onTap: () async {
@@ -105,16 +130,16 @@ class SignUpPage extends StatelessWidget {
                             height: MediaQuery.of(context).size.width * 0.14,
                             duration: const Duration(milliseconds: 500),
                             child: state.onChanged
-                                ? const Icon(
+                                ? Icon(
                                     Icons.done,
-                                    color: Colors.black,
+                                    color: NaturalColors.white,
                                     size: 50,
                                   )
-                                : const Center(
+                                : Center(
                                     child: Text(
                                       'Sign in',
                                       style: TextStyle(
-                                        color: Colors.black45,
+                                        color: NaturalColors.black,
                                         fontWeight: FontWeight.w700,
                                       ),
                                       textScaleFactor: 3,
@@ -128,11 +153,11 @@ class SignUpPage extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    const Text(
+                    Text(
                       'Already Registered?Login here->',
                       style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: Colors.blueGrey),
+                          color: NaturalColors.black),
                       textScaleFactor: 1,
                     ),
                     TextButton(
@@ -140,10 +165,10 @@ class SignUpPage extends StatelessWidget {
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               '/logging/', (route) => false);
                         },
-                        child: const Text(
+                        child: Text(
                           'Login!',
                           style: TextStyle(
-                            color: Colors.deepPurple,
+                            color: TextColors.blueGrey,
                           ),
                           textScaleFactor: 1.5,
                         )),

@@ -1,12 +1,11 @@
 import 'package:attendance_app/auth/auth_bloc/auth_cubit.dart';
 import 'package:attendance_app/auth/auth_bloc/auth_cubit_state_model.dart';
+import 'package:attendance_app/custom_widgets/custom_widgets.dart';
 import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:attendance_app/styles/text_styles/text_styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../custom_widgets/custom_widgets.dart';
 
 class LogInPage extends StatelessWidget {
   const LogInPage({super.key});
@@ -45,8 +44,12 @@ class LogInPage extends StatelessWidget {
                     children: [
                       customTextFieldWidget(
                         text: 'Email',
+                        hint: 'example@xyz.com',
                         controller: cubit.emailControllerLogin,
-                        icon: const Icon(CupertinoIcons.at_circle),
+                        icon: Icon(
+                          CupertinoIcons.at_circle,
+                          color: NaturalColors.lightBlack,
+                        ),
                         obscure: false,
                       ),
                       SizedBox(
@@ -55,7 +58,10 @@ class LogInPage extends StatelessWidget {
                       customTextFieldWidget(
                         text: 'Password',
                         controller: cubit.passwordControllerLogin,
-                        icon: const Icon(CupertinoIcons.lock_circle),
+                        icon: Icon(
+                          CupertinoIcons.lock_circle,
+                          color: NaturalColors.lightBlack,
+                        ),
                         obscure: true,
                       ),
                       Row(
@@ -76,7 +82,7 @@ class LogInPage extends StatelessWidget {
                           state.onChanged ? 150 : 10,
                         ),
                         color: state.onChanged
-                            ? AppColors.primaryAccentColor
+                            ? NaturalColors.black
                             : Colors.grey.shade200,
                         child: InkWell(
                           onTap: () async {
@@ -90,9 +96,9 @@ class LogInPage extends StatelessWidget {
                             height: MediaQuery.of(context).size.width * 0.14,
                             duration: const Duration(milliseconds: 500),
                             child: state.onChanged
-                                ? const Icon(
+                                ? Icon(
                                     Icons.done,
-                                    color: Colors.black,
+                                    color: NaturalColors.white,
                                     size: 50,
                                   )
                                 : Center(
@@ -110,11 +116,11 @@ class LogInPage extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    const Text(
+                    Text(
                       'Not Registered?Sign-up here->',
                       style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: Colors.blueGrey),
+                          color: NaturalColors.black),
                       textScaleFactor: 1,
                     ),
                     TextButton(

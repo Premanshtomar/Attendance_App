@@ -35,11 +35,11 @@ class AppTextStyles {
   static TextStyle textStyleHeading16 = TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 16,
-    color: TextColors.accentText,
+    color: TextColors.blueGrey,
   );
   static TextStyle textStyleHeading20 = TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 20,
-    color: TextColors.accentText,
+    color: TextColors.blueGrey,
   );
 }

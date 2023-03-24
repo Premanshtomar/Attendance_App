@@ -8,6 +8,7 @@ Widget customTextFieldWidget({
   Widget? icon,
   bool? obscure,
   Color? backgroundColor,
+  String? hint,
 }) {
   return TextField(
     obscureText: obscure ?? false,
@@ -18,13 +19,13 @@ Widget customTextFieldWidget({
     autocorrect: false,
     decoration: InputDecoration(
       prefixIcon: icon,
-      // hintText: text,
+      hintText: hint,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color:AppColors.primaryAccentColor ),
+        borderSide: BorderSide(color:NaturalColors.black ),
       ),
       fillColor: backgroundColor ?? NaturalColors.lightGrey,
       filled: true,
