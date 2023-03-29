@@ -1,4 +1,5 @@
 import 'package:attendance_app/page_tabs/models/models.dart';
+import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,26 +11,6 @@ class AppCubit extends Cubit<AppCubitStateModel> {
   AppCubit() : super(const AppCubitStateModel()) {
     setData();
     setCurrentDate();
-  }
-
-  Future<void> setData() async {
-    if (FirebaseAuth.instance.currentUser == null) {
-      return;
-    }
-
-    DocumentReference studentDocRef =
-        studentReference.doc(FirebaseAuth.instance.currentUser!.uid);
-    DocumentSnapshot studentDoc = await studentDocRef.get();
-    Student student =
-        Student.fromJson(studentDoc.data() as Map<String, dynamic>);
-    List<String> subjectsListFromFirestore = [...student.allSubjects];
-    emit(
-      state.copyWith(
-          subjects: subjectsListFromFirestore,
-          studentName: student.name,
-          course: student.enrolledCourse,
-          selectedYear: student.selectedYear),
-    );
   }
 
   CollectionReference studentReference =
@@ -46,6 +27,36 @@ class AppCubit extends Cubit<AppCubitStateModel> {
 
   PageController pageController = PageController(initialPage: 1);
   TextEditingController subjectFieldController = TextEditingController();
+
+  Future<void> setData() async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return;
+    }
+    var user = FirebaseAuth.instance.currentUser;
+    DocumentReference studentDocRef =
+        studentReference.doc(FirebaseAuth.instance.currentUser!.uid);
+    DocumentSnapshot studentDoc = await studentDocRef.get();
+    Student student =
+        Student.fromJson(studentDoc.data() as Map<String, dynamic>);
+    int presentYear = student.selectedYear;
+    DocumentSnapshot yearSnapshot =
+        await yearReference.doc(user!.uid + presentYear.toString()).get();
+    Year year = Year.fromJson(yearSnapshot.data() as Map<String, dynamic>);
+    List<String> subjectsListFromFirestore = [...year.subjects];
+    var temp = (year.totalPresent + year.totalAbsent) == 0
+        ? 1
+        : (year.totalPresent + year.totalAbsent);
+    int thisYearPercent = ((year.totalPresent) ~/ temp) * 100;
+    emit(
+      state.copyWith(
+        yearPercent: thisYearPercent,
+        subjects: subjectsListFromFirestore,
+        studentName: student.name,
+        course: student.enrolledCourse,
+        selectedYear: student.selectedYear,
+      ),
+    );
+  }
 
   void toggleExpandedTile() {
     emit(
@@ -103,59 +114,34 @@ class AppCubit extends Cubit<AppCubitStateModel> {
 
   Future<void> onDoneSubjectClicked(BuildContext context) async {
     if (subjectFieldController.text.trim().isNotEmpty) {
-      DocumentReference studentDoc = studentReference.doc(user!.uid);
-      DocumentSnapshot studentData = await studentDoc.get();
-      if (studentData.exists) {
-        Student presentStudent = Student.fromJson(
-          studentData.data()! as Map<String, dynamic>,
-        );
-        List<String> newSubjectList = [...state.subjects];
-        newSubjectList.add(subjectFieldController.text);
-        //     subjectName: subjectFieldController.text,
-        //     monthId: '${DateTime.now().month}',
-        //     monthPercent: monthPercent).toJson());
-        await studentReference.doc(user!.uid).update(
-          {'allSubjects': newSubjectList},
-        );
-        String selectedYearId = presentStudent.yearId[0];
-        DocumentSnapshot yearsDoc =
-            await yearReference.doc(selectedYearId).get();
-        if (yearsDoc.exists) {
-          Year year = Year.fromJson(
-            yearsDoc.data()! as Map<String, dynamic>,
-          );
-          List<String> newSubjectIdList = [...year.subjectId];
-          newSubjectIdList.add(
-            selectedYearId + subjectFieldController.text,
-          );
-          await yearReference
-              .doc(selectedYearId)
-              .update({'subjectId': newSubjectIdList});
+      List<String> newSubjectList = [...state.subjects];
+      newSubjectList.add(subjectFieldController.text.toUpperCase());
+      await yearReference.doc(user!.uid + state.selectedYear.toString()).update(
+        {'subjects': newSubjectList},
+      );
+      String selectedYearId = user!.uid + state.selectedYear.toString();
+      await subjectReference
+          .doc(selectedYearId + subjectFieldController.text.toUpperCase())
+          .set(Subject(
+                  subjectName: subjectFieldController.text.toUpperCase(),
+                  monthPercent: 0)
+              .toJson());
+      DocumentReference monthDocRef = monthReference.doc(user!.uid +
+          state.selectedYear.toString() +
+          subjectFieldController.text.toUpperCase() +
+          DateTime.now().month.toString());
+      await monthDocRef.set(Month(
+        monthPresent: 0,
+        monthAbsent: 0,
+        monthDayOff: 0,
+      ).toJson());
+      emit(
+        state.copyWith(
+          subjects: newSubjectList,
+          isVisible: false,
+        ),
+      );
 
-          await subjectReference
-              .doc(selectedYearId + subjectFieldController.text)
-              .set(Subject(
-                      subjectName: subjectFieldController.text,
-                      monthId: [],
-                      monthPercent: 0)
-                  .toJson());
-          DocumentReference monthDocRef = monthReference.doc(user!.uid +
-              state.selectedYear.toString() +
-              subjectFieldController.text+
-              DateTime.now().month.toString());
-          await monthDocRef.set(Month(
-            monthPresent: 0,
-            monthAbsent: 0,
-            monthDayOff: 0,
-          ).toJson());
-          emit(
-            state.copyWith(
-              subjects: newSubjectList,
-              isVisible: false,
-            ),
-          );
-        }
-      }
       subjectFieldController.clear();
     } else {
       emit(state.copyWith(isVisible: false));
@@ -167,13 +153,6 @@ class AppCubit extends Cubit<AppCubitStateModel> {
   }
 
   Future<void> onMarkAttendanceClicked() async {
-    DocumentReference dateDocRef = dateReference.doc(
-      user!.uid +
-          state.selectedYear.toString() +
-          state.selectedSubject! +
-          DateTime.now().month.toString() +
-          DateTime.now().day.toString(),
-    );
     int present = 0;
     int absent = 0;
     int dayOff = 0;
@@ -184,48 +163,170 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     } else {
       dayOff = 1;
     }
-    await dateDocRef.set(
-      Date(
-        present: present,
-        absent: absent,
-        dayOff: dayOff,
-      ).toJson(),
+    if (state.selectedSubject != null && state.isChecked != null) {
+      DocumentReference dateDocRef = dateReference.doc(
+        user!.uid +
+            state.selectedYear.toString() +
+            state.selectedSubject! +
+            DateTime.now().month.toString() +
+            DateTime.now().day.toString(),
+      );
+      DocumentSnapshot dateDocData = await dateDocRef.get();
+      if (dateDocData.exists) {
+        Date dateData =
+            Date.fromJson(dateDocData.data() as Map<String, dynamic>);
+        dateDocRef.update({
+          'noOfLectures': dateData.noOfLectures + 1,
+          'present': dateData.present + present,
+          'absent': dateData.absent + absent,
+          'dayOff': dateData.dayOff + dayOff,
+        });
+      } else {
+        await dateDocRef.set(
+          Date(
+            noOfLectures: 1,
+            present: present,
+            absent: absent,
+            dayOff: dayOff,
+          ).toJson(),
+        );
+      }
+      DocumentReference monthDocRef = monthReference.doc(user!.uid +
+          state.selectedYear.toString() +
+          state.selectedSubject! +
+          DateTime.now().month.toString());
+      DocumentSnapshot month = await monthDocRef.get();
+      Month presentMonth = Month.fromJson(month.data() as Map<String, dynamic>);
+      await monthDocRef.set(Month(
+        monthPresent: presentMonth.monthPresent + present,
+        monthAbsent: presentMonth.monthAbsent + absent,
+        monthDayOff: presentMonth.monthDayOff + dayOff,
+      ).toJson());
+      DocumentReference subjectDocRef = subjectReference.doc(
+          user!.uid + state.selectedYear.toString() + state.selectedSubject!);
+      int monthPresent = 0;
+      if (presentMonth.monthPresent + present == 0) {
+        monthPresent = 0;
+      } else {
+        monthPresent = ((presentMonth.monthPresent + present) ~/
+                (presentMonth.monthAbsent +
+                    absent +
+                    presentMonth.monthPresent +
+                    present)) *
+            100;
+      }
+      await subjectDocRef.update({'monthPercent': monthPresent});
+      DocumentReference yearDocRef = yearReference.doc(
+        user!.uid + state.selectedYear.toString(),
+      );
+      DocumentSnapshot selectedYear = await yearDocRef.get();
+      Year year = Year.fromJson(selectedYear.data() as Map<String, dynamic>);
+      await yearDocRef.update({
+        'totalAbsent': year.totalAbsent + absent,
+        'totalPresent': year.totalAbsent + present,
+        'totalDayOff': year.totalAbsent + dayOff,
+      });
+
+      absent = 0;
+      present = 0;
+      dayOff = 0;
+
+      emit(
+        state.copyWith(
+          isChecked: -1,
+          selectedSubject: Unknown.UNKNOWN.name,
+        ),
+      );
+    }
+  }
+
+  void onYearChangedClicked(int year) {
+    emit(
+      state.copyWith(
+        isCheckedYear: year,
+      ),
     );
-    DocumentReference monthDocRef = monthReference.doc(user!.uid +
+    // print(state.isCheckedYear);
+  }
+
+  Future<void> onYearSetClicked() async {
+    if (state.isCheckedYear == state.selectedYear) {
+      return;
+    } else {
+      await studentReference.doc(user!.uid).update({
+        'selectedYear': state.isCheckedYear,
+      });
+      DocumentReference yearDocRef =
+          yearReference.doc(user!.uid + state.isCheckedYear.toString());
+      DocumentSnapshot yearDocData = await yearDocRef.get();
+      if (yearDocData.exists) {
+        emit(state.copyWith(selectedYear: state.isCheckedYear));
+        return;
+      } else {
+        yearDocRef.set(Year(
+          totalPresent: 0,
+          totalAbsent: 0,
+          totalDayOff: 0,
+          subjects: [],
+        ).toJson());
+      }
+
+      emit(
+        state.copyWith(selectedYear: state.isCheckedYear),
+      );
+    }
+  }
+
+  void onYearCancelClicked() {
+    emit(
+      state.copyWith(
+        isCheckedYear: null,
+      ),
+    );
+  }
+
+  void onSubjectSelectInRecord(int index) {
+    emit(
+      state.copyWith(
+        selectedSubjectInRecord: state.subjects[index],
+      ),
+    );
+  }
+
+  void onDoneRecordClicked() {
+    emit(
+      state.copyWith(
+        selectedSubjectInRecord: null,
+      ),
+    );
+  }
+
+  Future<void> onSelectedSubjectInRecord(DateTime dateTime) async {
+    DocumentReference dateDocRef = dateReference.doc(user!.uid +
         state.selectedYear.toString() +
-        state.selectedSubject! +
-        DateTime.now().month.toString());
-    DocumentSnapshot month = await monthDocRef.get();
-    Month presentMonth = Month.fromJson(month.data() as Map<String, dynamic>);
-    await monthDocRef.set(Month(
-      monthPresent: presentMonth.monthPresent + present,
-      monthAbsent: presentMonth.monthAbsent + absent,
-      monthDayOff: presentMonth.monthDayOff + dayOff,
-    ).toJson());
-    DocumentReference subjectDocRef = subjectReference.doc(
-        user!.uid + state.selectedYear.toString() + state.selectedSubject!);
-    await subjectDocRef.update({
-      'monthPercent': presentMonth.monthPresent ~/
-          (presentMonth.monthAbsent + presentMonth.monthPresent).ceil()
-    });
-    DocumentReference yearDocRef = yearReference.doc(
-      user!.uid + state.selectedYear.toString(),
-    );
-    DocumentSnapshot selectedYear = await yearDocRef.get();
-    Year year = Year.fromJson(selectedYear.data()as Map<String, dynamic>);
-    await yearDocRef.update({
-      'totalAbsent':year.totalAbsent+absent,
-      'totalPrecent':year.totalAbsent+present,
-      'totalDayOff':year.totalAbsent+dayOff,
-    });
-    absent = 0;
-    present = 0;
-    dayOff = 0;
+        state.selectedSubjectInRecord! +
+        dateTime.month.toString() +
+        dateTime.day.toString());
+    DocumentSnapshot dateDocData = await dateDocRef.get();
+    DocumentReference subjectDocRef = subjectReference.doc(user!.uid +
+        state.selectedYear.toString() +
+        state.selectedSubjectInRecord!);
+    DocumentSnapshot subjectDocData = await subjectDocRef.get();
 
-    emit(state.copyWith(
-      isChecked: null,
-      selectedSubject: null,
-
-    ));
+    if (dateDocData.exists) {
+      Date dateData = Date.fromJson(
+        dateDocData.data() as Map<String, dynamic>,
+      );
+      Subject subjectData =
+          Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
+      emit(
+        state.copyWith(
+          recordPresent: dateData.present,
+          recordAbsent: dateData.absent,
+          recordLectures: dateData.noOfLectures,
+          recordMonthPercent: subjectData.monthPercent,
+        ),
+      );
+    }
   }
 }

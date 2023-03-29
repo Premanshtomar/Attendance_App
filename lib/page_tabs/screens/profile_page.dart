@@ -1,49 +1,61 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
+import 'package:attendance_app/utils/alert_dialog.dart';
+import 'package:attendance_app/utils/text_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../utils/alert_dialog.dart';
-import '../utils/text_widget.dart';
-
-class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
-
-  @override
-  State<Profile> createState() => _ProfileState();
-}
-
-class _ProfileState extends State<Profile> {
+class Profile extends StatelessWidget {
   File? _image;
   var user = FirebaseAuth.instance.currentUser;
 
-  Future _pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) {
-        null;
-      }
-      File? img = File(image!.path);
-      setState(() {
-        _image = img;
-      });
-    } on PlatformException catch (e) {
-      showErrorDialog(context, e.toString());
-    }
+  Profile({super.key});
+
+  // Future _pickImage(ImageSource source) async {
+  //   try {
+  //     final image = await ImagePicker().pickImage(source: source);
+  //     if (image == null) {
+  //       null;
+  //     }
+  //     File? img = File(image!.path);
+  //     setState(() {
+  //       _image = img;
+  //     });
+  //   } on PlatformException catch (e) {
+  //     showErrorDialog(context, e.toString());
+  //   }
+  // }
+  Widget yearChangeCheckbox(int yearNo, AppCubit cubit) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          yearNo.toString(),
+          style: const TextStyle(color: Colors.black),
+        ),
+        Checkbox(
+          fillColor: MaterialStateColor.resolveWith(
+            (states) => NaturalColors.black,
+          ),
+          activeColor: Colors.black,
+          value: yearNo == cubit.state.isCheckedYear,
+          onChanged: (_) {
+            cubit.onYearChangedClicked(yearNo);
+          },
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppCubitStateModel>(
       builder: (context, state) {
-        // var cubit = context.read<AppCubit>();
+        var cubit = context.read<AppCubit>();
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: SingleChildScrollView(
@@ -56,13 +68,13 @@ class _ProfileState extends State<Profile> {
                   child: InkWell(
                     onTap: () async {
                       var value = await showImagePickerDialog(context);
-                      if (value != null) {
-                        _pickImage(
-                          value == true
-                              ? ImageSource.gallery
-                              : ImageSource.camera,
-                        );
-                      }
+                      // if (value != null) {
+                      //   _pickImage(
+                      //     value == true
+                      //         ? ImageSource.gallery
+                      //         : ImageSource.camera,
+                      //   );
+                      // }
                     },
                     child: Center(
                       child: _image == null
@@ -108,10 +120,23 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const TextWidget(
+                              text: 'Email : ',
+                            ),
+                            TextWidget(
+                              text: FirebaseAuth.instance.currentUser!.email
+                                  .toString(),
+                              color: Colors.blueGrey,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const TextWidget(
                               text: 'Course : ',
                             ),
                             TextWidget(
-                              text:state.course,
+                              text: state.course,
                             ),
                           ],
                         ),
@@ -124,19 +149,60 @@ class _ProfileState extends State<Profile> {
                             TextWidget(
                               text: state.selectedYear.toString(),
                             ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const TextWidget(
-                              text: 'Email : ',
+                            TextButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return BlocBuilder<AppCubit,
+                                          AppCubitStateModel>(
+                                        builder: (context, state) {
+                                          return AlertDialog(
+                                            content: Wrap(
+                                              children: [
+                                                yearChangeCheckbox(1, cubit),
+                                                yearChangeCheckbox(2, cubit),
+                                                yearChangeCheckbox(3, cubit),
+                                                yearChangeCheckbox(4, cubit),
+                                                yearChangeCheckbox(5, cubit),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  cubit.onYearCancelClicked();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'No Thanks',
+                                                  style: TextStyle(
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  cubit.onYearSetClicked();
+                                                  Navigator.pop(context);
+                                                  // print(state.isCheckedYear.toString());
+                                                },
+                                                child: const Text(
+                                                  'Set',
+                                                  style: TextStyle(
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    });
+                              },
+                              child: const Text("(Change Year)"),
                             ),
-                            TextWidget(
-                              text: FirebaseAuth.instance.currentUser!.email
-                                  .toString(),
-                              color: Colors.blueGrey,
-                            ),
+                            // IconButton(
+                            //   onPressed: () {},
+                            //   icon: const Icon(Icons.add_circle),
+                            // ),
                           ],
                         ),
                         Row(
@@ -153,12 +219,12 @@ class _ProfileState extends State<Profile> {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            TextWidget(
+                          children: [
+                            const TextWidget(
                               text: '% in Year : ',
                             ),
                             TextWidget(
-                              text: 'Data',
+                              text: '${state.yearPercent}%',
                               color: Colors.blueGrey,
                             ),
                           ],
@@ -174,6 +240,7 @@ class _ProfileState extends State<Profile> {
                         onPressed: () async {
                           var shouldLogout = await showLogOutDialog(context);
                           if (shouldLogout) {
+                            cubit.onPageChanged(1);
                             FirebaseAuth.instance.signOut();
                             Navigator.of(context).pushNamed('/logging/');
                           }

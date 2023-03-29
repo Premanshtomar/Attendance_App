@@ -1,15 +1,14 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:attendance_app/auth/pages/login.dart';
 import 'package:attendance_app/custom_widgets/custom_widgets.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
+import 'package:attendance_app/page_tabs/screens/home.dart';
 import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-import '../../auth/pages/login.dart';
-import '../../main.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -47,7 +46,7 @@ class SplashScreen extends StatelessWidget {
           splash: Row(
             children: [
               const Padding(
-                padding: EdgeInsets.fromLTRB(16,0,0,0),
+                padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
                 child: Text(
                   'Attendance',
                   textScaleFactor: 2.5,
@@ -56,7 +55,9 @@ class SplashScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: MediaQuery.of(context).size.height*0.03,),
+              SizedBox(
+                width: MediaQuery.of(context).size.height * 0.03,
+              ),
               SpinKitFoldingCube(
                 color: NaturalColors.lightBlack,
               ),

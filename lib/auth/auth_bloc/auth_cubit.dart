@@ -2,6 +2,7 @@
 
 import 'package:attendance_app/auth/repo/auth_exceptions.dart';
 import 'package:attendance_app/auth/repo/repo.dart';
+import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/models/models.dart';
 import 'package:attendance_app/utils/alert_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,7 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
   AuthCubit() : super(const AuthCubitStateModel());
 
   FirebaseRepo firebaseRepo = FirebaseRepo();
+  AppCubit appCubit = AppCubit();
   final TextEditingController emailControllerSignup = TextEditingController();
   final TextEditingController nameControllerSignup = TextEditingController();
   final TextEditingController passwordControllerSignup =
@@ -51,17 +53,20 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
                 name: nameControllerSignup.text,
                 enrolledCourse: courseFieldController.text.trim(),
                 selectedYear: state.year,
-                profilePhoto: 'profilePhoto',
-                yearId: [user.uid + state.year.toString()],
-                allSubjects: [],
+                profilePhoto: 'NA',
               ).toJson());
           var yearReference = FirebaseFirestore.instance.collection('year');
           yearReference.doc(user.uid + state.year.toString()).set(Year(
                 totalPresent: 0,
                 totalAbsent: 0,
                 totalDayOff: 0,
-                subjectId: [],
+                subjects: [],
               ).toJson());
+          courseFieldController.clear();
+          nameControllerSignup.clear();
+          passwordControllerSignup.clear();
+          emailControllerSignup.clear();
+
 
         }
         // Navigator.of(context).pushNamed('/email_verify/');
@@ -98,7 +103,7 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
       var user = FirebaseAuth.instance.currentUser;
       if (user != null && user.emailVerified) {
         if (!context.mounted) return;
-        Navigator.of(context).pushNamed('/homepage/');
+        Navigator.of(context).pushNamedAndRemoveUntil('/mini_splash/',(route) => false,);
       } else if (user != null && user.emailVerified == false) {
         showErrorDialog(context, 'Please verify your Email first!');
       }

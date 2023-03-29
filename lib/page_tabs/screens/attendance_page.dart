@@ -1,5 +1,6 @@
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
+import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,36 +24,36 @@ class AttendancePage extends StatelessWidget {
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.3,
                     width: MediaQuery.of(context).size.width,
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              "Today's Date",
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                              textScaleFactor: 2.5,
-                            ),
-                            Text(
-                              '${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                              textScaleFactor: 1.9,
-                            ),
-                            Text(
-                              DateFormat('EEEE')
-                                  .format(DateTime.now())
-                                  .toString(),
-                              textScaleFactor: 1.5,
-                            ),
-                          ],
+                        const Text(
+                          "Today's Date",
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                          textScaleFactor: 2.5,
+                        ),
+                        Text(
+                          '${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          textScaleFactor: 1.9,
+                        ),
+                        Text(
+                          DateFormat('EEEE').format(DateTime.now()).toString(),
+                          textScaleFactor: 1.5,
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(
+                Container(
+                  decoration: BoxDecoration(
+                    // color: Colors.red,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        MediaQuery.of(context).size.width * 0.05,
+                      ),
+                    ),
+                  ),
                   height: MediaQuery.of(context).size.height * 0.38,
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
@@ -75,7 +76,9 @@ class AttendancePage extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 8, 4, 0),
                                   child: Text(
-                                    (state.selectedSubject == null
+                                    (state.selectedSubject == null ||
+                                            state.selectedSubject ==
+                                                Unknown.UNKNOWN.name
                                         ? 'Select Subject'
                                         : state.selectedSubject!),
                                     style: const TextStyle(

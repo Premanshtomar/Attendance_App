@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 Future<void> showErrorDialog(BuildContext context, String text) {
   return showDialog(
       context: context,
@@ -7,11 +8,11 @@ Future<void> showErrorDialog(BuildContext context, String text) {
           title: const Text('Error!'),
           content: Text(text),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            },
-                child: const Text('ok')
-            )
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ok'))
           ],
         );
       });
@@ -22,15 +23,14 @@ Future<void> showEmailVerificationDialog(BuildContext context, String text) {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-              'Password reset link sent'),
+          title: const Text('Password reset link sent'),
           content: Text(text),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            },
-                child: const Text('ok')
-            )
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ok'))
           ],
         );
       });
@@ -41,15 +41,14 @@ Future<void> showRecipeDialog(BuildContext context, String text) {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-              'Password reset link sent'),
+          title: const Text('Password reset link sent'),
           content: Text(text),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            },
-                child: const Text('ok')
-            )
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ok'))
           ],
         );
       });
@@ -60,58 +59,63 @@ Future<void> showEmailDialog(BuildContext context, String text) {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-              'Your Email is ->'),
+          title: const Text('Your Email is ->'),
           content: Text(text),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            },
-                child: const Text('ok')
-            )
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ok'))
           ],
         );
       });
 }
 
-Future<bool> showLogOutDialog(BuildContext context){
-  return showDialog(context: context, builder: (context){
-    return AlertDialog(
-      title: const Text('Logout?'),
-      content: const Text("Sure you want to Logout?"),
-      actions: [
-        TextButton(onPressed: () {
-          Navigator.of(context).pop(false);
-        },
-            child: const Text('Cancel')),
-        TextButton(onPressed: () {
-          Navigator.of(context).pop(true);
-        },
-            child: const Text('Logout'))
-
-      ],
-    );
-  }).then((value) => value ?? false);
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Logout?'),
+          content: const Text("Sure you want to Logout?"),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('Logout'))
+          ],
+        );
+      }).then((value) => value ?? false);
 }
 
-Future<bool?> showImagePickerDialog(BuildContext context){
-  return showDialog(context: context, builder: (context){
-    return AlertDialog(
-      title: const Center(child: Text('Upload Image')),
-      content: const Text("From where do you want to upload image?"),
-      actions: [
-        TextButton(onPressed: () {
-          Navigator.of(context).pop(true);
-          // Navigator.of(context).pop();
-        },
-            child: const Text('Gallery')),
-        TextButton(onPressed: () {
-          Navigator.of(context).pop(false);
-          // Navigator.of(context).pop();
-        },
-            child: const Text('Camera'))
-
-      ],
-    );
-  });
+Future<bool?> showImagePickerDialog(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(child: Text('Upload Image')),
+          content: const Text("From where do you want to upload image?"),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                  // Navigator.of(context).pop();
+                },
+                child: const Text('Gallery')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                  // Navigator.of(context).pop();
+                },
+                child: const Text('Camera'))
+          ],
+        );
+      });
 }

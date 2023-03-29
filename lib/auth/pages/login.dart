@@ -87,6 +87,7 @@ class LogInPage extends StatelessWidget {
                         child: InkWell(
                           onTap: () async {
                             cubit.onLoginButtonClicked(context);
+
                           },
                           child: AnimatedContainer(
                             // alignment: Alignment.center,

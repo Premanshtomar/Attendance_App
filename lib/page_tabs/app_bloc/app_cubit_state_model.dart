@@ -1,10 +1,18 @@
+import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:equatable/equatable.dart';
 
 class AppCubitStateModel extends Equatable {
+  final int yearPercent;
+  final int recordMonthPercent;
+  final int recordPresent;
+  final int recordLectures;
+  final int recordAbsent;
+  final String? selectedSubjectInRecord;
   final String course;
   final String studentName;
   final int? subjectListIndex;
-  final int? isChecked;
+  final int isChecked;
+  final int? isCheckedYear;
   final List<String> subjects;
   final int pageIndex;
   final DateTime? selectedDate;
@@ -14,7 +22,14 @@ class AppCubitStateModel extends Equatable {
   final String? selectedSubject;
 
   const AppCubitStateModel({
+    this.yearPercent = 0,
+    this.recordMonthPercent = 0,
+    this.recordAbsent = 0,
+    this.recordLectures = 0,
+    this.recordPresent = 0,
+    this.selectedSubjectInRecord,
     this.selectedSubject,
+    this.isCheckedYear,
     this.course = '',
     this.selectedYear = 0,
     this.studentName = '',
@@ -23,12 +38,19 @@ class AppCubitStateModel extends Equatable {
     this.selectedDate,
     this.pageIndex = 1,
     this.subjects = const [],
-    this.isChecked,
+    this.isChecked = -1,
     this.isExpandableTileExpanded = false,
   });
 
   AppCubitStateModel copyWith(
-      {int? isChecked,
+      {int? isCheckedYear,
+      int? yearPercent,
+      int? recordMonthPercent,
+      int? recordAbsent,
+      int? recordLectures,
+      int? recordPresent,
+      String? selectedSubjectInRecord,
+      int? isChecked,
       String? selectedSubject,
       int? selectedYear,
       String? course,
@@ -52,11 +74,26 @@ class AppCubitStateModel extends Equatable {
       course: course ?? this.course,
       selectedYear: selectedYear ?? this.selectedYear,
       selectedSubject: selectedSubject ?? this.selectedSubject,
+      isCheckedYear: isCheckedYear ?? this.isCheckedYear,
+      selectedSubjectInRecord:
+          selectedSubjectInRecord ?? this.selectedSubjectInRecord,
+      recordAbsent: recordAbsent ?? this.recordAbsent,
+      recordLectures: recordLectures ?? this.recordLectures,
+      recordPresent: recordPresent ?? this.recordPresent,
+      recordMonthPercent: recordMonthPercent ?? this.recordMonthPercent,
+      yearPercent: yearPercent ?? this.yearPercent,
     );
   }
 
   @override
   List<Object?> get props => [
+        yearPercent,
+        recordMonthPercent,
+        recordPresent,
+        recordLectures,
+        recordAbsent,
+        selectedSubjectInRecord,
+        isCheckedYear,
         selectedSubject,
         selectedYear,
         course,

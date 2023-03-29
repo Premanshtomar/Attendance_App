@@ -18,7 +18,7 @@ class SignUpPage extends StatelessWidget {
             (states) => NaturalColors.black,
           ),
           value: yearNo == cubit.state.year,
-          onChanged: (val) {
+          onChanged: (_) {
             cubit.onYearClicked(yearNo);
           },
         ),
