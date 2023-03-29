@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -122,14 +125,42 @@ class AttendancePage extends StatelessWidget {
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
-                        side: const BorderSide(color: Colors.red),
+                        side: BorderSide(color: NaturalColors.black),
                       ),
                     ),
                     elevation: MaterialStateProperty.all(30.0),
                     backgroundColor: MaterialStateProperty.all(Colors.black45),
                   ),
-                  onPressed: () {
-                    cubit.onMarkAttendanceClicked();
+                  onPressed: () async {
+                    bool marked = await cubit.onMarkAttendanceClicked();
+                    if (marked == true) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: NaturalColors.backgroundColor,
+                          content: Text(
+                            'Attendance Marked',
+                            style: TextStyle(
+                              color: TextColors.successColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: NaturalColors.backgroundColor,
+                          content: Text(
+                            'Select Correct Fields!',
+                            style: TextStyle(
+                              color: TextColors.errorColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
                     'Mark Attendance',

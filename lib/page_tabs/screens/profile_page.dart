@@ -42,7 +42,7 @@ class Profile extends StatelessWidget {
             (states) => NaturalColors.black,
           ),
           activeColor: Colors.black,
-          value: yearNo == cubit.state.isCheckedYear,
+          value: yearNo == cubit.state.checkedYear,
           onChanged: (_) {
             cubit.onYearChangedClicked(yearNo);
           },
@@ -103,7 +103,7 @@ class Profile extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -203,18 +203,6 @@ class Profile extends StatelessWidget {
                             //   onPressed: () {},
                             //   icon: const Icon(Icons.add_circle),
                             // ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            TextWidget(
-                              text: '% in Month : ',
-                            ),
-                            TextWidget(
-                              text: 'Data',
-                              color: Colors.blueGrey,
-                            ),
                           ],
                         ),
                         Row(

@@ -1,9 +1,13 @@
+import 'dart:ui';
+
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
 import 'package:attendance_app/page_tabs/page_tabs/tabs_map.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -56,15 +60,37 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
-            body: PageView(
-              controller: cubit.pageController,
-              onPageChanged: (index) {
-                cubit.onPageChanged(index);
-              },
+            body: Stack(
               children: [
-                pageTabs[0]['pageName'],
-                pageTabs[1]['pageName'],
-                pageTabs[2]['pageName'],
+                state.isLoading == true
+                    ? BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 0.5,
+                          sigmaY: 0.5,
+                        ),
+                        // blendMode: BlendMode.multiply,
+                        child: Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          color: NaturalColors.black.withOpacity(0.2),
+                          child: Center(
+                            child: SpinKitFoldingCube(
+                              color: NaturalColors.white,
+                            ),
+                          ),
+                        ),
+                      )
+                    : PageView(
+                        controller: cubit.pageController,
+                        onPageChanged: (index) {
+                          cubit.onPageChanged(index);
+                        },
+                        children: [
+                          pageTabs[0]['pageName'],
+                          pageTabs[1]['pageName'],
+                          pageTabs[2]['pageName'],
+                        ],
+                      ),
               ],
             ),
           ),

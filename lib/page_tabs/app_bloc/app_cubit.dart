@@ -23,7 +23,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       FirebaseFirestore.instance.collection('year');
   CollectionReference subjectReference =
       FirebaseFirestore.instance.collection('subjects');
-  User? user = FirebaseAuth.instance.currentUser;
+  // User? user = FirebaseAuth.instance.currentUser;
 
   PageController pageController = PageController(initialPage: 1);
   TextEditingController subjectFieldController = TextEditingController();
@@ -46,7 +46,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     var temp = (year.totalPresent + year.totalAbsent) == 0
         ? 1
         : (year.totalPresent + year.totalAbsent);
-    int thisYearPercent = ((year.totalPresent) ~/ temp) * 100;
+    double thisYearPercent = (((year.totalPresent) / temp) * 100);
     emit(
       state.copyWith(
         yearPercent: thisYearPercent,
@@ -93,7 +93,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       context: context,
       firstDate: DateTime.utc(2000, 09, 20),
       initialDate: state.selectedDate ?? DateTime.now(),
-      lastDate: DateTime.utc(2030, 09, 20),
+      lastDate: DateTime.now(),
     ).then((value) {
       emit(
         state.copyWith(
@@ -113,20 +113,21 @@ class AppCubit extends Cubit<AppCubitStateModel> {
   }
 
   Future<void> onDoneSubjectClicked(BuildContext context) async {
+    var user = FirebaseAuth.instance.currentUser!;
     if (subjectFieldController.text.trim().isNotEmpty) {
       List<String> newSubjectList = [...state.subjects];
       newSubjectList.add(subjectFieldController.text.toUpperCase());
-      await yearReference.doc(user!.uid + state.selectedYear.toString()).update(
+      await yearReference.doc(user.uid + state.selectedYear.toString()).update(
         {'subjects': newSubjectList},
       );
-      String selectedYearId = user!.uid + state.selectedYear.toString();
+      String selectedYearId = user.uid + state.selectedYear.toString();
       await subjectReference
           .doc(selectedYearId + subjectFieldController.text.toUpperCase())
           .set(Subject(
                   subjectName: subjectFieldController.text.toUpperCase(),
                   monthPercent: 0)
               .toJson());
-      DocumentReference monthDocRef = monthReference.doc(user!.uid +
+      DocumentReference monthDocRef = monthReference.doc(user.uid +
           state.selectedYear.toString() +
           subjectFieldController.text.toUpperCase() +
           DateTime.now().month.toString());
@@ -152,7 +153,11 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     emit(state.copyWith(selectedSubject: state.subjects[index]));
   }
 
-  Future<void> onMarkAttendanceClicked() async {
+  Future<bool> onMarkAttendanceClicked() async {
+    emit(
+      state.copyWith(isLoading: true),
+    );
+    var user = FirebaseAuth.instance.currentUser;
     int present = 0;
     int absent = 0;
     int dayOff = 0;
@@ -163,7 +168,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     } else {
       dayOff = 1;
     }
-    if (state.selectedSubject != null && state.isChecked != null) {
+    if (state.selectedSubject != null && state.isChecked != -1) {
       DocumentReference dateDocRef = dateReference.doc(
         user!.uid +
             state.selectedYear.toString() +
@@ -191,7 +196,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
           ).toJson(),
         );
       }
-      DocumentReference monthDocRef = monthReference.doc(user!.uid +
+      DocumentReference monthDocRef = monthReference.doc(user.uid +
           state.selectedYear.toString() +
           state.selectedSubject! +
           DateTime.now().month.toString());
@@ -203,7 +208,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
         monthDayOff: presentMonth.monthDayOff + dayOff,
       ).toJson());
       DocumentReference subjectDocRef = subjectReference.doc(
-          user!.uid + state.selectedYear.toString() + state.selectedSubject!);
+          user.uid + state.selectedYear.toString() + state.selectedSubject!);
       int monthPresent = 0;
       if (presentMonth.monthPresent + present == 0) {
         monthPresent = 0;
@@ -217,14 +222,14 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       }
       await subjectDocRef.update({'monthPercent': monthPresent});
       DocumentReference yearDocRef = yearReference.doc(
-        user!.uid + state.selectedYear.toString(),
+        user.uid + state.selectedYear.toString(),
       );
       DocumentSnapshot selectedYear = await yearDocRef.get();
       Year year = Year.fromJson(selectedYear.data() as Map<String, dynamic>);
       await yearDocRef.update({
         'totalAbsent': year.totalAbsent + absent,
-        'totalPresent': year.totalAbsent + present,
-        'totalDayOff': year.totalAbsent + dayOff,
+        'totalPresent': year.totalPresent + present,
+        'totalDayOff': year.totalDayOff + dayOff,
       });
 
       absent = 0;
@@ -233,34 +238,59 @@ class AppCubit extends Cubit<AppCubitStateModel> {
 
       emit(
         state.copyWith(
+          isLoading: false,
           isChecked: -1,
           selectedSubject: Unknown.UNKNOWN.name,
         ),
       );
+      setData();
+      return true;
+    } else {
+      emit(
+        state.copyWith(
+          isLoading: false,
+        ),
+      );
+      return false;
     }
   }
 
   void onYearChangedClicked(int year) {
     emit(
       state.copyWith(
-        isCheckedYear: year,
+        checkedYear: year,
       ),
     );
     // print(state.isCheckedYear);
   }
 
   Future<void> onYearSetClicked() async {
-    if (state.isCheckedYear == state.selectedYear) {
+    var user = FirebaseAuth.instance.currentUser;
+    if (state.checkedYear == state.selectedYear) {
       return;
     } else {
+      emit(
+        state.copyWith(
+          isLoading: true,
+        ),
+      );
       await studentReference.doc(user!.uid).update({
-        'selectedYear': state.isCheckedYear,
+        'selectedYear': state.checkedYear,
       });
       DocumentReference yearDocRef =
-          yearReference.doc(user!.uid + state.isCheckedYear.toString());
+          yearReference.doc(user.uid + state.checkedYear.toString());
       DocumentSnapshot yearDocData = await yearDocRef.get();
       if (yearDocData.exists) {
-        emit(state.copyWith(selectedYear: state.isCheckedYear));
+        emit(
+          state.copyWith(
+            selectedYear: state.checkedYear,
+            pageIndex: 1,
+          ),
+        );
+        setData();
+        emit(
+          state.copyWith(isLoading: false),
+        );
         return;
       } else {
         yearDocRef.set(Year(
@@ -270,17 +300,23 @@ class AppCubit extends Cubit<AppCubitStateModel> {
           subjects: [],
         ).toJson());
       }
-
-      emit(
-        state.copyWith(selectedYear: state.isCheckedYear),
+      state.copyWith(
+        selectedYear: state.checkedYear,
       );
+      setData();
     }
+    emit(
+      state.copyWith(
+        pageIndex: 1,
+        isLoading: false,
+      ),
+    );
   }
 
   void onYearCancelClicked() {
     emit(
       state.copyWith(
-        isCheckedYear: null,
+        checkedYear: null,
       ),
     );
   }
@@ -296,19 +332,22 @@ class AppCubit extends Cubit<AppCubitStateModel> {
   void onDoneRecordClicked() {
     emit(
       state.copyWith(
-        selectedSubjectInRecord: null,
+        doneRecord: false,
+        selectedSubjectInRecord: Unknown.UNKNOWN.name,
+        // doneRecord: false,
       ),
     );
   }
 
   Future<void> onSelectedSubjectInRecord(DateTime dateTime) async {
+    var user = FirebaseAuth.instance.currentUser;
     DocumentReference dateDocRef = dateReference.doc(user!.uid +
         state.selectedYear.toString() +
         state.selectedSubjectInRecord! +
         dateTime.month.toString() +
         dateTime.day.toString());
     DocumentSnapshot dateDocData = await dateDocRef.get();
-    DocumentReference subjectDocRef = subjectReference.doc(user!.uid +
+    DocumentReference subjectDocRef = subjectReference.doc(user.uid +
         state.selectedYear.toString() +
         state.selectedSubjectInRecord!);
     DocumentSnapshot subjectDocData = await subjectDocRef.get();
@@ -317,16 +356,25 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       Date dateData = Date.fromJson(
         dateDocData.data() as Map<String, dynamic>,
       );
-      Subject subjectData =
-          Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
+      print(dateData.noOfLectures);
+      print(state.selectedSubjectInRecord);
+      // Subject subjectData =
+          // Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
       emit(
         state.copyWith(
           recordPresent: dateData.present,
           recordAbsent: dateData.absent,
           recordLectures: dateData.noOfLectures,
-          recordMonthPercent: subjectData.monthPercent,
+          // recordMonthPercent: subjectData.monthPercent,
+          doneRecord: true,
         ),
       );
     }
+  }
+
+  void onConfirmRecordClicked() {
+    emit(
+      state.copyWith(doneRecord: true,),
+    );
   }
 }
