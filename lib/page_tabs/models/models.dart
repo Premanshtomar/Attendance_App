@@ -37,12 +37,12 @@ class Subject {
   });
 
   final String subjectName;
-  final int monthPercent;
+  final double monthPercent;
 
   factory Subject.fromJson(Map<String, dynamic> json) {
     return Subject(
-      subjectName: json['subjectName'] as String,
-      monthPercent: json['monthPercent'] as int,
+      subjectName: json['name'] as String,
+      monthPercent: json['monthPercent'] as double,
     );
   }
 

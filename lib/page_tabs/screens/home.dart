@@ -62,35 +62,28 @@ class Home extends StatelessWidget {
             ),
             body: Stack(
               children: [
-                state.isLoading == true
-                    ? BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaX: 0.5,
-                          sigmaY: 0.5,
-                        ),
-                        // blendMode: BlendMode.multiply,
-                        child: Container(
-                          height: double.infinity,
-                          width: double.infinity,
-                          color: NaturalColors.black.withOpacity(0.2),
-                          child: Center(
-                            child: SpinKitFoldingCube(
-                              color: NaturalColors.white,
-                            ),
-                          ),
-                        ),
-                      )
-                    : PageView(
-                        controller: cubit.pageController,
-                        onPageChanged: (index) {
-                          cubit.onPageChanged(index);
-                        },
-                        children: [
-                          pageTabs[0]['pageName'],
-                          pageTabs[1]['pageName'],
-                          pageTabs[2]['pageName'],
-                        ],
+                if (state.isLoading == true)
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    color: NaturalColors.black.withOpacity(0.4),
+                    child: Center(
+                      child: SpinKitFoldingCube(
+                        color: NaturalColors.white,
                       ),
+                    ),
+                  ),
+                PageView(
+                  controller: cubit.pageController,
+                  onPageChanged: (index) {
+                    cubit.onPageChanged(index);
+                  },
+                  children: [
+                    pageTabs[0]['pageName'],
+                    pageTabs[1]['pageName'],
+                    pageTabs[2]['pageName'],
+                  ],
+                ),
               ],
             ),
           ),

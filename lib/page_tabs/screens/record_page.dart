@@ -219,7 +219,7 @@ class RecordPage extends StatelessWidget {
                                     textScaleFactor: 2,
                                   ),
                                   Text(
-                                    '${state.recordMonthPercent}',
+                                    state.recordMonthPercent.toStringAsFixed(2),
                                     style: TextStyle(
                                         fontWeight: FontWeight.w800,
                                         color: TextColors.successColor),
@@ -261,33 +261,36 @@ class RecordPage extends StatelessWidget {
                           ),
                         ),
                       )
-                    : TextButton(
-                        style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              side: BorderSide(color: NaturalColors.black),
+                    : Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextButton(
+                          style: ButtonStyle(
+                            shape:
+                                MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                                side: BorderSide(color: NaturalColors.black),
+                              ),
                             ),
+                            elevation: MaterialStateProperty.all(30.0),
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.black45),
                           ),
-                          elevation: MaterialStateProperty.all(30.0),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.black45),
-                        ),
-                        onPressed: () async {
-                          await cubit.onSelectedSubjectInRecord(
-                              state.selectedDate ??
-                                  DateTime.now());
-                        },
-                        child: const Text(
-                          'Show Record',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
+                          onPressed: () async {
+                            await cubit.onSelectedSubjectInRecord(
+                                state.selectedDate ??
+                                    DateTime.now(),context);
+                          },
+                          child: const Text(
+                            'Show Record',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            textScaleFactor: 2,
                           ),
-                          textScaleFactor: 2,
                         ),
-                      ),
+                    ),
               )
             ],
           ),

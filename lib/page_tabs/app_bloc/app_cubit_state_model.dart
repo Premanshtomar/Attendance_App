@@ -4,7 +4,7 @@ class AppCubitStateModel extends Equatable {
   final bool doneRecord;
   final bool isLoading;
   final double yearPercent;
-  final int recordMonthPercent;
+  final double recordMonthPercent;
   final int recordPresent;
   final int recordLectures;
   final int recordAbsent;
@@ -49,7 +49,7 @@ class AppCubitStateModel extends Equatable {
       {int? checkedYear,
       bool? isLoading,
       double? yearPercent,
-      int? recordMonthPercent,
+      double? recordMonthPercent,
       bool? doneRecord,
       int? recordAbsent,
       int? recordLectures,

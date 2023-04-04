@@ -133,8 +133,8 @@ class AttendancePage extends StatelessWidget {
                   ),
                   onPressed: () async {
                     bool marked = await cubit.onMarkAttendanceClicked();
+                    if (!context.mounted) return;
                     if (marked == true) {
-                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: NaturalColors.backgroundColor,

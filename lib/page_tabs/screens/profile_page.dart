@@ -80,11 +80,14 @@ class Profile extends StatelessWidget {
                       child: _image == null
                           ? CircleAvatar(
                               radius: MediaQuery.of(context).size.width * 0.3,
-                              backgroundColor: Colors.black45,
-                              child: const Text(
-                                'No image selected',
-                                style: TextStyle(fontSize: 20),
+                              backgroundImage: const AssetImage(
+                                'assets/profile.png',
                               ),
+                              // backgroundColor: Colors.black45,
+                              // child: const Text(
+                              //   'No image selected',
+                              //   style: TextStyle(fontSize: 20),
+                              // ),
                             )
                           : CircleAvatar(
                               radius: MediaQuery.of(context).size.width * 0.3,
@@ -123,8 +126,8 @@ class Profile extends StatelessWidget {
                               text: 'Email : ',
                             ),
                             TextWidget(
-                              text: FirebaseAuth.instance.currentUser!.email
-                                  .toString(),
+                              text: FirebaseAuth.instance.currentUser?.email
+                                  .toString() ?? '',
                               color: Colors.blueGrey,
                             ),
                           ],
@@ -212,7 +215,7 @@ class Profile extends StatelessWidget {
                               text: '% in Year : ',
                             ),
                             TextWidget(
-                              text: '${state.yearPercent}%',
+                              text: '${state.yearPercent.toStringAsFixed(2)}%',
                               color: Colors.blueGrey,
                             ),
                           ],
@@ -228,9 +231,7 @@ class Profile extends StatelessWidget {
                         onPressed: () async {
                           var shouldLogout = await showLogOutDialog(context);
                           if (shouldLogout) {
-                            cubit.onPageChanged(1);
-                            FirebaseAuth.instance.signOut();
-                            Navigator.of(context).pushNamed('/logging/');
+                            await cubit.onLogoutClicked(context);
                           }
                         },
                         icon: const Icon(Icons.logout)),

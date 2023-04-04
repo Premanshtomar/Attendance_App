@@ -1,4 +1,5 @@
 import 'package:attendance_app/page_tabs/models/models.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       FirebaseFirestore.instance.collection('year');
   CollectionReference subjectReference =
       FirebaseFirestore.instance.collection('subjects');
+
   // User? user = FirebaseAuth.instance.currentUser;
 
   PageController pageController = PageController(initialPage: 1);
@@ -209,18 +211,18 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       ).toJson());
       DocumentReference subjectDocRef = subjectReference.doc(
           user.uid + state.selectedYear.toString() + state.selectedSubject!);
-      int monthPresent = 0;
+      double monthPercent = 0;
       if (presentMonth.monthPresent + present == 0) {
-        monthPresent = 0;
+        monthPercent = 0;
       } else {
-        monthPresent = ((presentMonth.monthPresent + present) ~/
+        monthPercent = ((presentMonth.monthPresent + present) /
                 (presentMonth.monthAbsent +
                     absent +
                     presentMonth.monthPresent +
                     present)) *
             100;
       }
-      await subjectDocRef.update({'monthPercent': monthPresent});
+      await subjectDocRef.update({'monthPercent': monthPercent});
       DocumentReference yearDocRef = yearReference.doc(
         user.uid + state.selectedYear.toString(),
       );
@@ -332,6 +334,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
   void onDoneRecordClicked() {
     emit(
       state.copyWith(
+        selectedDate: DateTime.now(),
         doneRecord: false,
         selectedSubjectInRecord: Unknown.UNKNOWN.name,
         // doneRecord: false,
@@ -339,7 +342,8 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     );
   }
 
-  Future<void> onSelectedSubjectInRecord(DateTime dateTime) async {
+  Future<void> onSelectedSubjectInRecord(
+      DateTime dateTime, BuildContext context) async {
     var user = FirebaseAuth.instance.currentUser;
     DocumentReference dateDocRef = dateReference.doc(user!.uid +
         state.selectedYear.toString() +
@@ -358,23 +362,51 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       );
       print(dateData.noOfLectures);
       print(state.selectedSubjectInRecord);
-      // Subject subjectData =
-          // Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
+      Subject subjectData =
+          Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
       emit(
         state.copyWith(
           recordPresent: dateData.present,
           recordAbsent: dateData.absent,
           recordLectures: dateData.noOfLectures,
-          // recordMonthPercent: subjectData.monthPercent,
+          recordMonthPercent: subjectData.monthPercent,
           doneRecord: true,
         ),
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: NaturalColors.backgroundColor,
+          content: Text(
+            'No Record Found for this date!!',
+            style: TextStyle(
+                color: TextColors.errorColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 20),
+          ),
+        ),
+      );
+      emit(state.copyWith(
+          selectedDate: DateTime.now(),
+          selectedSubjectInRecord: Unknown.UNKNOWN.name));
     }
   }
 
   void onConfirmRecordClicked() {
     emit(
-      state.copyWith(doneRecord: true,),
+      state.copyWith(
+        doneRecord: true,
+      ),
+    );
+  }
+
+  Future<void> onLogoutClicked(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushNamed('/logging/');
+    emit(
+      state.copyWith(
+        pageIndex: 1,
+      ),
     );
   }
 }
