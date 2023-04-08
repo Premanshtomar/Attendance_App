@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "835497651757",
+    "project_id": "attendance-5b307",
+    "storage_bucket": "attendance-5b307.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835497651757:android:191bce417677706cc852a4",
+        "android_client_info": {
+          "package_name": "com.premanshtomar.attendance_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835497651757-ni3udg3qovaq7ltpth0rtc5ik3mhhden.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN2-u8x1ku_eCvTsE7ZUEvGOAS6HLZg9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835497651757-ni3udg3qovaq7ltpth0rtc5ik3mhhden.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

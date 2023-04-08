@@ -1,150 +1,125 @@
-import 'package:attendance_app/auth/repo/repo.dart';
+import 'package:attendance_app/auth/auth_bloc/auth_cubit.dart';
+import 'package:attendance_app/auth/auth_bloc/auth_cubit_state_model.dart';
 import 'package:attendance_app/custom_widgets/custom_widgets.dart';
+import 'package:attendance_app/styles/colors/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../utils/alert_dialog.dart';
-import '../repo/auth_exceptions.dart';
-
-class ForgetPassword extends StatefulWidget {
-  const ForgetPassword({Key? key}) : super(key: key);
-
-  @override
-  State<ForgetPassword> createState() => _ForgetPasswordState();
-}
-
-class _ForgetPasswordState extends State<ForgetPassword> {
-  final TextEditingController _email = TextEditingController();
-  bool onChanged = false;
+class ForgetPassword extends StatelessWidget {
+  const ForgetPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            customImageContainer(context, 'assets/forget.png'),
-            const Text(
-              'Forget Password?',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-              textScaleFactor: 2,
-            ),
-            const Text(
-              "Don't worry it happens!",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-            ),
-            const Text(
-              'Enter your Email so we can help you!',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-              textScaleFactor: 2.75,
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  customTextFieldWidget(
-                      'Email', _email, CupertinoIcons.at_circle, false),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  Material(
-                    borderRadius: BorderRadius.circular(onChanged ? 150 : 10),
-                    color: onChanged
-                        ? Colors.lightBlueAccent.shade200
-                        : Colors.grey.shade200,
-                    child: InkWell(
-                      onTap: () async {
-                        setState(() {
-                          onChanged = true;
-                        });
-                        await Future.delayed(const Duration(milliseconds: 500));
-                        final email = _email.text.trim();
-                        final firebaseUser = FirebaseRepo();
-                        try {
-                          await firebaseUser.forgetPassword(email: email);
-                          // ignore: use_build_context_synchronously
-                          showErrorDialog(context,
-                              'Password reset link is sent to your Email.');
-                          setState(() {
-                            onChanged = false;
-                          });
-                        } on UserNotFoundAuthException catch (_) {
-                          // ignore: use_build_context_synchronously
-                          showErrorDialog(context, 'User Not Found');
-                        } on InvalidEmailAuthException catch (_) {
-                          // ignore: use_build_context_synchronously
-                          showErrorDialog(context, 'Invalid Email Address');
-                        } on GenericAuthException catch (_) {
-                          // ignore: use_build_context_synchronously
-                          showErrorDialog(context, 'Authentication Error');
-                        }
-
-                        setState(() {
-                          onChanged = false;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        // alignment: Alignment.center,
-                        width: onChanged
-                            ? MediaQuery.of(context).size.width * 0.12
-                            : MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.width * 0.13,
-                        duration: const Duration(milliseconds: 500),
-                        child: onChanged
-                            ? const Icon(
-                                Icons.done,
-                                color: Colors.black,
-                                size: 50,
-                              )
-                            : const Center(
-                                child: Text(
-                                  'Send link',
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  textScaleFactor: 3,
-                                ),
-                              ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Column(
+    return BlocBuilder<AuthCubit, AuthCubitStateModel>(
+      builder: (context, state) {
+        AuthCubit cubit = context.read<AuthCubit>();
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                customImageContainer(context, 'assets/forget.png'),
                 const Text(
-                  'Click here to Login->',
+                  'Forget Password?',
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blueGrey,
-                  ),
-                  textScaleFactor: 1,
+                      color: Colors.black, fontWeight: FontWeight.w700),
+                  textScaleFactor: 2,
                 ),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/logging/', (route) => false);
-                    },
-                    child: const Text(
-                      'Login!',
-                      style: TextStyle(
-                        color: Colors.deepPurple,
+                const Text(
+                  "Don't worry it happens!",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w700),
+                ),
+                const Text(
+                  'Enter your Email so we can help you!',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w700),
+                  textScaleFactor: 2.75,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      customTextFieldWidget(
+                        text: 'Email',
+                        controller: cubit.emailControllerForgetPassword,
+                        icon:  Icon(CupertinoIcons.at_circle,color: NaturalColors.lightBlack,),
+                        obscure: false,
                       ),
-                      textScaleFactor: 1.5,
-                    )),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Material(
+                        borderRadius:
+                            BorderRadius.circular(state.onChanged ? 150 : 10),
+                        color: state.onChanged
+                            ? NaturalColors.black
+                            : Colors.grey.shade200,
+                        child: InkWell(
+                          onTap: () async {
+                            cubit.onForgetPasswordClicked(context);
+                          },
+                          child: AnimatedContainer(
+                            // alignment: Alignment.center,
+                            width: state.onChanged
+                                ? MediaQuery.of(context).size.width * 0.12
+                                : MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.width * 0.13,
+                            duration: const Duration(milliseconds: 500),
+                            child: state.onChanged
+                                ? Icon(
+                                    Icons.done,
+                                    color: NaturalColors.white,
+                                    size: 50,
+                                  )
+                                : Center(
+                                    child: Text(
+                                      'Send link',
+                                      style: TextStyle(
+                                        color: TextColors.accentText,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      textScaleFactor: 3,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'Click here to Login->',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: TextColors.accentText,
+                      ),
+                      textScaleFactor: 1,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/logging/', (route) => false);
+                        },
+                        child: Text(
+                          'Login!',
+                          style: TextStyle(
+                            color: TextColors.blueGrey,
+                          ),
+                          textScaleFactor: 1.5,
+                        )),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
