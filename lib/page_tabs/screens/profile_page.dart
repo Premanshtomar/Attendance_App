@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit_state_model.dart';
 import 'package:attendance_app/styles/colors/colors.dart';
@@ -8,27 +6,11 @@ import 'package:attendance_app/utils/text_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Profile extends StatelessWidget {
-  File? _image;
-  var user = FirebaseAuth.instance.currentUser;
+  const Profile({super.key});
 
-  Profile({super.key});
-
-  // Future _pickImage(ImageSource source) async {
-  //   try {
-  //     final image = await ImagePicker().pickImage(source: source);
-  //     if (image == null) {
-  //       null;
-  //     }
-  //     File? img = File(image!.path);
-  //     setState(() {
-  //       _image = img;
-  //     });
-  //   } on PlatformException catch (e) {
-  //     showErrorDialog(context, e.toString());
-  //   }
-  // }
   Widget yearChangeCheckbox(int yearNo, AppCubit cubit) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -68,30 +50,29 @@ class Profile extends StatelessWidget {
                   child: InkWell(
                     onTap: () async {
                       var value = await showImagePickerDialog(context);
-                      // if (value != null) {
-                      //   _pickImage(
-                      //     value == true
-                      //         ? ImageSource.gallery
-                      //         : ImageSource.camera,
-                      //   );
-                      // }
+                      if (value != null) {
+                        // ignore: use_build_context_synchronously
+                        cubit.onProfileImageClicked(
+                          value == true
+                              ? ImageSource.gallery
+                              : ImageSource.camera,
+                          context,
+                        );
+                      }
                     },
                     child: Center(
-                      child: _image == null
+                      child: state.image!.trim().isEmpty
                           ? CircleAvatar(
                               radius: MediaQuery.of(context).size.width * 0.3,
                               backgroundImage: const AssetImage(
                                 'assets/profile.png',
                               ),
-                              // backgroundColor: Colors.black45,
-                              // child: const Text(
-                              //   'No image selected',
-                              //   style: TextStyle(fontSize: 20),
-                              // ),
                             )
                           : CircleAvatar(
                               radius: MediaQuery.of(context).size.width * 0.3,
-                              backgroundImage: FileImage(_image!),
+                              backgroundImage: NetworkImage(
+                                state.image!,
+                              ),
                             ),
                     ),
                   ),
@@ -127,7 +108,8 @@ class Profile extends StatelessWidget {
                             ),
                             TextWidget(
                               text: FirebaseAuth.instance.currentUser?.email
-                                  .toString() ?? '',
+                                      .toString() ??
+                                  '',
                               color: Colors.blueGrey,
                             ),
                           ],
@@ -231,6 +213,7 @@ class Profile extends StatelessWidget {
                         onPressed: () async {
                           var shouldLogout = await showLogOutDialog(context);
                           if (shouldLogout) {
+                            // ignore: use_build_context_synchronously
                             await cubit.onLogoutClicked(context);
                           }
                         },

@@ -1,10 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:attendance_app/page_tabs/models/models.dart';
 import 'package:attendance_app/styles/colors/colors.dart';
+import 'package:attendance_app/utils/alert_dialog.dart';
 import 'package:attendance_app/utils/helper_enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'app_cubit_state_model.dart';
 
@@ -51,6 +59,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
     double thisYearPercent = (((year.totalPresent) / temp) * 100);
     emit(
       state.copyWith(
+        image: student.profilePhoto,
         yearPercent: thisYearPercent,
         subjects: subjectsListFromFirestore,
         studentName: student.name,
@@ -286,7 +295,7 @@ class AppCubit extends Cubit<AppCubitStateModel> {
         emit(
           state.copyWith(
             selectedYear: state.checkedYear,
-            pageIndex: 1,
+            // pageIndex: 2,
           ),
         );
         setData();
@@ -302,14 +311,17 @@ class AppCubit extends Cubit<AppCubitStateModel> {
           subjects: [],
         ).toJson());
       }
-      state.copyWith(
-        selectedYear: state.checkedYear,
+      emit(
+        state.copyWith(
+          selectedYear: state.checkedYear,
+          // pageIndex: 1,
+        ),
       );
       setData();
     }
     emit(
       state.copyWith(
-        pageIndex: 1,
+        // pageIndex: 2,
         isLoading: false,
       ),
     );
@@ -360,8 +372,6 @@ class AppCubit extends Cubit<AppCubitStateModel> {
       Date dateData = Date.fromJson(
         dateDocData.data() as Map<String, dynamic>,
       );
-      print(dateData.noOfLectures);
-      print(state.selectedSubjectInRecord);
       Subject subjectData =
           Subject.fromJson(subjectDocData.data() as Map<String, dynamic>);
       emit(
@@ -408,5 +418,40 @@ class AppCubit extends Cubit<AppCubitStateModel> {
         pageIndex: 1,
       ),
     );
+  }
+
+  Future<void> onProfileImageClicked(
+      ImageSource source, BuildContext context) async {
+    var user = FirebaseAuth.instance.currentUser;
+
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) {
+        return;
+      }
+      File img = File(image.path);
+      const path = 'ProfilePhotos';
+      final ref = FirebaseStorage.instance.ref().child(path);
+      Reference imageRef = ref.child('''${state.studentName}
+          ${DateTime.now().day}
+          ${DateTime.now().month}''');
+      UploadTask uploadTask = imageRef.putFile(img);
+      TaskSnapshot uploadSnap = await uploadTask;
+      final downloadUrl = await uploadSnap.ref.getDownloadURL();
+      //E482743C-6D2C-49AD-B9D3-AE0505C6E028
+      DocumentReference studentDocRef = studentReference.doc(user!.uid);
+      studentDocRef.update(
+        {
+          'profilePhoto': downloadUrl,
+        },
+      );
+      emit(
+        state.copyWith(
+          image: downloadUrl,
+        ),
+      );
+    } on PlatformException catch (e) {
+      showErrorDialog(context, e.toString());
+    }
   }
 }

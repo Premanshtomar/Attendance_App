@@ -6,6 +6,8 @@ import 'package:attendance_app/styles/text_styles/text_styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 
 class LogInPage extends StatelessWidget {
   const LogInPage({super.key});
@@ -38,82 +40,96 @@ class LogInPage extends StatelessWidget {
                 ),
                 // ignore: sized_box_for_whitespace
                 Container(
-                  height: MediaQuery.of(context).size.height * .35,
+                  height: MediaQuery.of(context).size.height * .30,
                   width: MediaQuery.of(context).size.width * .90,
-                  child: Column(
-                    children: [
-                      customTextFieldWidget(
-                        text: 'Email',
-                        hint: 'example@xyz.com',
-                        controller: cubit.emailControllerLogin,
-                        icon: Icon(
-                          CupertinoIcons.at_circle,
-                          color: NaturalColors.lightBlack,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        customTextFieldWidget(
+                          text: 'Email',
+                          hint: 'example@xyz.com',
+                          controller: cubit.emailControllerLogin,
+                          icon: Icon(
+                            CupertinoIcons.at_circle,
+                            color: NaturalColors.lightBlack,
+                          ),
+                          obscure: false,
                         ),
-                        obscure: false,
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .02,
-                      ),
-                      customTextFieldWidget(
-                        text: 'Password',
-                        controller: cubit.passwordControllerLogin,
-                        icon: Icon(
-                          CupertinoIcons.lock_circle,
-                          color: NaturalColors.lightBlack,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * .02,
                         ),
-                        obscure: true,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/reset_pass/', (route) => false);
+                        customTextFieldWidget(
+                          text: 'Password',
+                          controller: cubit.passwordControllerLogin,
+                          icon: Icon(
+                            CupertinoIcons.lock_circle,
+                            color: NaturalColors.lightBlack,
+                          ),
+                          obscure: true,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                    '/reset_pass/', (route) => false);
+                              },
+                              child: Text('Forget Password?',
+                                  style: AppTextStyles.textStyleHeading16),
+                            ),
+                          ],
+                        ),
+                        Material(
+                          borderRadius: BorderRadius.circular(
+                            state.onChanged ? 150 : 10,
+                          ),
+                          color: state.onChanged
+                              ? NaturalColors.black
+                              : Colors.grey.shade200,
+                          child: InkWell(
+                            onTap: () async {
+                              cubit.onLoginButtonClicked(context);
                             },
-                            child: Text('Forget Password?',
-                                style: AppTextStyles.textStyleHeading16),
-                          ),
-                        ],
-                      ),
-                      Material(
-                        borderRadius: BorderRadius.circular(
-                          state.onChanged ? 150 : 10,
-                        ),
-                        color: state.onChanged
-                            ? NaturalColors.black
-                            : Colors.grey.shade200,
-                        child: InkWell(
-                          onTap: () async {
-                            cubit.onLoginButtonClicked(context);
-
-                          },
-                          child: AnimatedContainer(
-                            // alignment: Alignment.center,
-                            width: state.onChanged
-                                ? MediaQuery.of(context).size.width * 0.12
-                                : MediaQuery.of(context).size.width * 0.4,
-                            height: MediaQuery.of(context).size.width * 0.14,
-                            duration: const Duration(milliseconds: 500),
-                            child: state.onChanged
-                                ? Icon(
-                                    Icons.done,
-                                    color: NaturalColors.white,
-                                    size: 50,
-                                  )
-                                : Center(
-                                    child: Text(
-                                      'Login',
-                                      style: AppTextStyles.textStyleHeading14,
-                                      textScaleFactor: 3,
+                            child: AnimatedContainer(
+                              // alignment: Alignment.center,
+                              width: state.onChanged
+                                  ? MediaQuery.of(context).size.width * 0.12
+                                  : MediaQuery.of(context).size.width * 0.4,
+                              height: MediaQuery.of(context).size.width * 0.14,
+                              duration: const Duration(milliseconds: 500),
+                              child: state.onChanged
+                                  ? Icon(
+                                      Icons.done,
+                                      color: NaturalColors.white,
+                                      size: MediaQuery.of(context).size.height,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'Login',
+                                        style: AppTextStyles.textStyleHeading14,
+                                        textScaleFactor: 3,
+                                      ),
                                     ),
-                                  ),
+                            ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
+                ),
+                const Divider(thickness: 2),
+                Text(
+                  'OR',
+                  style: AppTextStyles.textStyleHeading28,
+                ),
+                SignInButton(
+                  text: "Sign-in with google",
+                  elevation: 0,
+                  Buttons.Google,
+                  onPressed: () {
+                    cubit.onGoogleSignClicked();
+                  },
                 ),
                 Column(
                   children: [

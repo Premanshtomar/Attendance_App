@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class AppCubitStateModel extends Equatable {
+  final String? image;
   final bool doneRecord;
   final bool isLoading;
   final double yearPercent;
@@ -23,6 +24,7 @@ class AppCubitStateModel extends Equatable {
   final String? selectedSubject;
 
   const AppCubitStateModel({
+    this.image,
     this.doneRecord = false,
     this.isLoading = false,
     this.yearPercent = 0.0,
@@ -47,6 +49,7 @@ class AppCubitStateModel extends Equatable {
 
   AppCubitStateModel copyWith(
       {int? checkedYear,
+      String? image,
       bool? isLoading,
       double? yearPercent,
       double? recordMonthPercent,
@@ -89,11 +92,13 @@ class AppCubitStateModel extends Equatable {
       yearPercent: yearPercent ?? this.yearPercent,
       isLoading: isLoading ?? this.isLoading,
       doneRecord: doneRecord ?? this.doneRecord,
+      image: image ?? this.image,
     );
   }
 
   @override
   List<Object?> get props => [
+        image,
         doneRecord,
         isLoading,
         yearPercent,

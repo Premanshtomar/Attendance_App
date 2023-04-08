@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:attendance_app/auth/google_signin/google_signin.dart';
 import 'package:attendance_app/auth/repo/auth_exceptions.dart';
 import 'package:attendance_app/auth/repo/repo.dart';
 import 'package:attendance_app/page_tabs/app_bloc/app_cubit.dart';
@@ -137,5 +138,8 @@ class AuthCubit extends Cubit<AuthCubitStateModel> {
       showErrorDialog(context, 'Authentication Error');
     }
     emit(state.copyWith(onChanged: false));
+  }
+  void onGoogleSignClicked(){
+    GoogleAuth().signIn();
   }
 }

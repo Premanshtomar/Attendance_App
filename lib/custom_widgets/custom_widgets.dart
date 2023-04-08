@@ -41,7 +41,7 @@ Widget customImageContainer(BuildContext context, String image) {
   return Container(
     padding: EdgeInsets.zero,
     margin: EdgeInsets.zero,
-    height: MediaQuery.of(context).size.height * 0.35,
+    height: MediaQuery.of(context).size.height * 0.30,
     width: MediaQuery.of(context).size.width,
     alignment: Alignment.topCenter,
     decoration: BoxDecoration(

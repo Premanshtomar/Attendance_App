@@ -115,7 +115,6 @@ class RecordPage extends StatelessWidget {
                                                 index,
                                               );
                                               Navigator.pop(context);
-
                                             },
                                             leading: Text(
                                               '${index + 1}.',
@@ -156,117 +155,121 @@ class RecordPage extends StatelessWidget {
                         // color: Colors.green,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 20,
-                                      color: NaturalColors.black),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20,
+                                        color: NaturalColors.black),
+                                    children: [
+                                      const TextSpan(
+                                          text: "On this day there are "),
+                                      TextSpan(
+                                        text: "${state.recordLectures} ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: TextColors.blueGrey,
+                                        ),
+                                      ),
+                                      const TextSpan(text: "lectures of "),
+                                      TextSpan(
+                                        text: state.selectedSubjectInRecord ??
+                                            'this',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: TextColors.blueGrey,
+                                        ),
+                                      ),
+                                      const TextSpan(
+                                          text:
+                                              " subject and you are present in "),
+                                      TextSpan(
+                                        text: '${state.recordPresent}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: TextColors.successColor,
+                                        ),
+                                      ),
+                                      const TextSpan(text: " and absent in "),
+                                      TextSpan(
+                                        text: "${state.recordAbsent}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            color: TextColors.errorColor),
+                                      ),
+                                      const TextSpan(text: " lectures."),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.08,
+                                ),
+                                Wrap(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    const TextSpan(
-                                        text: "On this day there are "),
-                                    TextSpan(
-                                      text: "${state.recordLectures} ",
+                                    const Text(
+                                      "This month's Percentage of this Subject: ",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: TextColors.blueGrey,
-                                      ),
+                                          fontWeight: FontWeight.w600),
+                                      textScaleFactor: 2,
                                     ),
-                                    const TextSpan(text: "lectures of "),
-                                    TextSpan(
-                                      text: state.selectedSubjectInRecord ??
-                                          'this',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: TextColors.blueGrey,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                        text:
-                                            " subject and you are present in "),
-                                    TextSpan(
-                                      text: '${state.recordPresent}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: TextColors.successColor,
-                                      ),
-                                    ),
-                                    const TextSpan(text: " and absent in "),
-                                    TextSpan(
-                                      text: "${state.recordAbsent}",
+                                    Text(
+                                      state.recordMonthPercent
+                                          .toStringAsFixed(2),
                                       style: TextStyle(
                                           fontWeight: FontWeight.w800,
-                                          color: TextColors.errorColor),
+                                          color: TextColors.successColor),
+                                      textScaleFactor: 2,
                                     ),
-                                    const TextSpan(text: " lectures."),
                                   ],
                                 ),
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.08,
-                              ),
-                              Wrap(
-                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const Text(
-                                    "This month's Percentage of this Subject: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
-                                    textScaleFactor: 2,
-                                  ),
-                                  Text(
-                                    state.recordMonthPercent.toStringAsFixed(2),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: TextColors.successColor),
-                                    textScaleFactor: 2,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.02,
-                              ),
-                              TextButton(
-                                style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18.0),
-                                      side: BorderSide(
-                                          color: NaturalColors.black),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.02,
+                                ),
+                                TextButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                        side: BorderSide(
+                                            color: NaturalColors.black),
+                                      ),
                                     ),
+                                    elevation: MaterialStateProperty.all(30.0),
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.black45),
                                   ),
-                                  elevation: MaterialStateProperty.all(30.0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.black45),
-                                ),
-                                onPressed: () {
-                                  cubit.onDoneRecordClicked();
-                                },
-                                child: const Text(
-                                  'Ok',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
+                                  onPressed: () {
+                                    cubit.onDoneRecordClicked();
+                                  },
+                                  child: const Text(
+                                    'Ok',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    textScaleFactor: 2,
                                   ),
-                                  textScaleFactor: 2,
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       )
                     : Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextButton(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextButton(
                           style: ButtonStyle(
-                            shape:
-                                MaterialStateProperty.all<RoundedRectangleBorder>(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(18.0),
                                 side: BorderSide(color: NaturalColors.black),
@@ -278,8 +281,7 @@ class RecordPage extends StatelessWidget {
                           ),
                           onPressed: () async {
                             await cubit.onSelectedSubjectInRecord(
-                                state.selectedDate ??
-                                    DateTime.now(),context);
+                                state.selectedDate ?? DateTime.now(), context);
                           },
                           child: const Text(
                             'Show Record',
@@ -290,7 +292,7 @@ class RecordPage extends StatelessWidget {
                             textScaleFactor: 2,
                           ),
                         ),
-                    ),
+                      ),
               )
             ],
           ),
